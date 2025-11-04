@@ -9,16 +9,16 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="pb-12">
-        <div className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto">
+      <main className="pb-8 sm:pb-12">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 max-w-7xl mx-auto">
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="flex-1 order-1">
             <HeroSection />
             <StoriesSection />
           </div>
           
           {/* Sidebar */}
-          <aside className="lg:w-80 px-4 sm:px-6 lg:px-0 lg:pr-8 pt-8">
+          <aside className="w-full lg:w-80 px-4 sm:px-6 lg:px-0 lg:pr-8 pt-4 sm:pt-6 lg:pt-8 order-2 lg:order-2">
             <DogOfTheWeek />
           </aside>
         </div>

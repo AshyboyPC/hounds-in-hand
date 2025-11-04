@@ -1,46 +1,100 @@
-import { MessageCircle, Users, MoreHorizontal } from "lucide-react";
-import hopeLogo from "@/assets/hope-for-hounds-logo.png";
+import { Instagram, Facebook, Twitter } from "lucide-react";
+import hopeLogo from "@/assets/image-removebg-preview (18).png";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex items-center justify-between">
+        {/* Mobile Layout */}
+        <div className="md:hidden space-y-4">
+          {/* Logo and Name */}
+          <div className="flex items-center justify-center space-x-3">
+            <img 
+              src={hopeLogo} 
+              alt="Hounds in Hand" 
+              className="w-10 h-10 filter brightness-0 invert"
+            />
+            <span className="text-base heading-font">Hounds in Hand</span>
+          </div>
+
+          {/* Social Icons */}
+          <div className="flex items-center justify-center space-x-6">
+            <button className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+              <Instagram className="h-5 w-5" />
+            </button>
+            <button className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+              <Facebook className="h-5 w-5" />
+            </button>
+            <button className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+              <Twitter className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="flex flex-wrap items-center justify-center gap-4 text-sm">
+            <Link to="/about" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+              About
+            </Link>
+            <Link to="/contact" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+              Contact
+            </Link>
+            <Link to="/privacy-policy" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+              Privacy Policy
+            </Link>
+            <Link to="/partnerships" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+              Partnerships
+            </Link>
+          </nav>
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden md:flex items-center justify-between mb-4">
           {/* Left Side - Logo and School Name */}
           <div className="flex items-center space-x-3">
             <img 
               src={hopeLogo} 
-              alt="Campbell High School" 
-              className="w-8 h-8 filter brightness-0 invert"
+              alt="Hounds in Hand" 
+              className="w-12 h-12 filter brightness-0 invert"
             />
-            <span className="text-lg font-semibold">Campbell High School</span>
+            <span className="text-lg heading-font">Hounds in Hand</span>
           </div>
 
           {/* Center - Navigation Links */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-              Campbell High School
-            </a>
-            <a href="#" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-              Central Tennessee High School
-            </a>
-            <a href="#" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-              Approved and Sent to you Day
-            </a>
+          <nav className="flex items-center space-x-8">
+            <Link to="/about" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+              About
+            </Link>
+            <Link to="/contact" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+              Contact
+            </Link>
+            <Link to="/privacy-policy" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+              Privacy Policy
+            </Link>
+            <Link to="/partnerships" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+              Partnerships
+            </Link>
           </nav>
 
           {/* Right Side - Social Icons */}
           <div className="flex items-center space-x-4">
             <button className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-              <MessageCircle className="h-5 w-5" />
+              <Instagram className="h-5 w-5" />
             </button>
             <button className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-              <Users className="h-5 w-5" />
+              <Facebook className="h-5 w-5" />
             </button>
             <button className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-              <MoreHorizontal className="h-5 w-5" />
+              <Twitter className="h-5 w-5" />
             </button>
           </div>
+        </div>
+        
+        {/* Copyright Line */}
+        <div className="text-center border-t border-primary-foreground/20 pt-4 mt-4 md:mt-0">
+          <p className="text-primary-foreground/70 body-font text-xs sm:text-sm">
+            © 2025 Hounds in Hand
+          </p>
         </div>
       </div>
     </footer>

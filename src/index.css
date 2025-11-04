@@ -1,60 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700&display=swap');
+
+/* Custom Fonts */
+@font-face {
+  font-family: 'CsBelia';
+  src: url('./assets/CsBeliaDemoRegular-q2B1x.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MadeGentle';
+  src: url('./assets/MADE Gentle PERSONAL USE.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Hope for Hounds Design System - Exact Color Match */
+/* Hounds in Hand Design System - Exact Color Match */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    /* Campbell High School Blue - Lighter */
+    --campbell-blue: 214 70% 45%;
+    
+    /* Warm Red - Sweeter/Softer */
+    --warm-red: 0 70% 65%;
+    
+    /* Soft Yellow/Orange (#F5A623) */
+    --soft-yellow: 39 91% 55%;
+    
+    /* White (#FFFFFF) */
+    --pure-white: 0 0% 100%;
+    
+    /* Light Gray (#F8F9FA) */
+    --light-gray: 210 17% 98%;
+
+    --background: var(--pure-white);
     --foreground: 220 15% 25%;
 
-    --card: 0 0% 100%;
+    --card: var(--light-gray);
     --card-foreground: 220 15% 25%;
 
-    --popover: 0 0% 100%;
+    --popover: var(--pure-white);
     --popover-foreground: 220 15% 25%;
 
-    /* Primary Blue - Exact match from design */
-    --primary: 214 100% 47%;
-    --primary-foreground: 0 0% 100%;
+    /* Primary Blue - Campbell High School Blue */
+    --primary: var(--campbell-blue);
+    --primary-foreground: var(--pure-white);
 
-    /* Red for hearts and urgent alerts */
-    --destructive: 0 100% 60%;
-    --destructive-foreground: 0 0% 100%;
+    /* Red for hearts and urgent alerts - Warm Red */
+    --destructive: var(--warm-red);
+    --destructive-foreground: var(--pure-white);
 
-    /* Yellow for volunteer button */
-    --warning: 45 100% 60%;
+    /* Yellow for volunteer button - Soft Yellow/Orange */
+    --warning: var(--soft-yellow);
     --warning-foreground: 220 15% 25%;
 
-    --secondary: 220 13% 95%;
+    --secondary: var(--light-gray);
     --secondary-foreground: 220 15% 25%;
 
-    --muted: 220 13% 95%;
+    --muted: var(--light-gray);
     --muted-foreground: 220 9% 46%;
 
-    --accent: 220 13% 95%;
+    --accent: var(--light-gray);
     --accent-foreground: 220 15% 25%;
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 214 100% 47%;
+    --ring: var(--campbell-blue);
 
     --radius: 0.75rem;
 
-    /* Custom Hope for Hounds colors */
+    /* Custom Hounds in Hand colors */
     --hero-overlay: 0 0% 0% / 0.4;
     --urgent-bg: 14 100% 95%;
-    --urgent-text: 0 84% 60%;
+    --urgent-text: var(--warm-red);
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: var(--light-gray);
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: var(--campbell-blue);
   }
 
   .dark {
@@ -103,5 +135,92 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
+    font-weight: 500;
   }
+
+  /* Typography Classes */
+  .heading-font {
+    font-family: 'MadeGentle', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: normal;
+  }
+
+  .display-font {
+    font-family: 'MadeGentle', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: normal;
+  }
+
+  .subheading-font {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
+    font-weight: 600;
+  }
+
+  .body-font {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
+    font-weight: 500;
+  }
+
+  .button-font {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
+    font-weight: 700;
+  }
+
+  /* Custom slider styling for warning color thumb */
+  [data-radix-slider-thumb] {
+    background-color: hsl(var(--warning));
+    border-color: hsl(var(--warning));
+  }
+
+  [data-radix-slider-range] {
+    background-color: hsl(var(--warning));
+  }
+}
+/* Leaflet Map Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Custom Leaflet Popup Styling */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.leaflet-popup-tip {
+  background: white !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+}
+
+/* Custom marker animations */
+.custom-shelter-icon {
+  animation: none;
+}
+
+.user-location-icon {
+  animation: pulse 2s infinite;
+}
+
+/* Ensure map controls are properly styled */
+.leaflet-control-zoom a {
+  background-color: white !important;
+  color: #374151 !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: #f9fafb !important;
 }

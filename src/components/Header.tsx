@@ -1,61 +1,135 @@
-import { Search, Menu } from "lucide-react";
+import { Search, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import hopeLogo from "@/assets/hope-for-hounds-logo.png";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import hopeLogo from "@/assets/image-removebg-preview (18).png";
 
 const Header = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
-    <header className="w-full bg-background border-b border-border">
+    <header className="w-full bg-background relative z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-4">
+          <Link to="/" className="flex items-center space-x-2 sm:space-x-3">
             <img 
               src={hopeLogo} 
-              alt="Hope for Hounds Campbell High School" 
-              className="w-12 h-12"
+              alt="Hounds in Hand" 
+              className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20"
             />
-            <div>
-              <h1 className="text-2xl font-bold text-primary">Hope</h1>
-              <h2 className="text-2xl font-bold text-primary">for Hounds</h2>
+            <div className="hidden sm:block">
+              <h1 className="text-sm sm:text-lg heading-font text-primary">Hounds in Hand</h1>
             </div>
-          </div>
+          </Link>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              Campbell High School
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              Central Dauphin East
+          <nav className="hidden lg:flex items-center space-x-6">
+            <Link to="/" className="text-foreground hover:text-primary transition-colors body-font font-medium px-3 py-2 rounded-lg hover:bg-primary/5">
+              Home
+            </Link>
+            <Link to="/map" className="text-foreground hover:text-primary transition-colors body-font font-medium px-3 py-2 rounded-lg hover:bg-primary/5">
+              Interactive Map
+            </Link>
+            <Link to="/adopt" className="text-foreground hover:text-destructive transition-colors body-font font-medium px-3 py-2 rounded-lg hover:bg-destructive/5">
+              Adopt
+            </Link>
+            <Link to="/volunteer" className="text-foreground hover:text-warning transition-colors body-font font-medium px-3 py-2 rounded-lg hover:bg-warning/10">
+              Volunteer
+            </Link>
+            <Link to="/donate" className="text-foreground hover:text-primary transition-colors body-font font-medium px-3 py-2 rounded-lg hover:bg-primary/5">
+              Donations
+            </Link>
+            <a href="#" className="text-foreground hover:text-primary transition-colors body-font font-medium px-3 py-2 rounded-lg hover:bg-primary/5">
+              Resource Hub
             </a>
           </nav>
 
-          {/* Search Bar */}
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <div className="flex">
-                <Input
-                  placeholder="Campbell Junction"
-                  className="w-40 rounded-r-none border-r-0 bg-background"
-                />
-                <Button 
-                  variant="default"
-                  size="sm"
-                  className="rounded-l-none px-4"
-                >
-                  Campbell High School
-                </Button>
-              </div>
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            </div>
+          {/* Login/Dashboard & Mobile Menu */}
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <Link to="/login">
+              <Button 
+                variant="outline"
+                size="sm"
+                className="hidden md:flex button-font border-primary text-primary hover:bg-primary hover:text-primary-foreground text-xs sm:text-sm"
+              >
+                Login / Dashboard
+              </Button>
+            </Link>
 
             {/* Mobile menu button */}
-            <Button variant="ghost" size="sm" className="md:hidden">
-              <Menu className="h-5 w-5" />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="lg:hidden text-foreground hover:bg-muted"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden absolute top-16 left-0 right-0 bg-background border-t border-border shadow-lg">
+            <nav className="px-4 py-4 space-y-2">
+              <Link 
+                to="/" 
+                className="block text-foreground hover:text-primary transition-colors body-font font-medium px-3 py-2 rounded-lg hover:bg-primary/5"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link 
+                to="/map" 
+                className="block text-foreground hover:text-primary transition-colors body-font font-medium px-3 py-2 rounded-lg hover:bg-primary/5"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Interactive Map
+              </Link>
+              <Link 
+                to="/adopt" 
+                className="block text-foreground hover:text-destructive transition-colors body-font font-medium px-3 py-2 rounded-lg hover:bg-destructive/5"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Adopt
+              </Link>
+              <Link 
+                to="/volunteer" 
+                className="block text-foreground hover:text-warning transition-colors body-font font-medium px-3 py-2 rounded-lg hover:bg-warning/10"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Volunteer
+              </Link>
+              <Link 
+                to="/donate" 
+                className="block text-foreground hover:text-primary transition-colors body-font font-medium px-3 py-2 rounded-lg hover:bg-primary/5"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Donations
+              </Link>
+              <a 
+                href="#" 
+                className="block text-foreground hover:text-primary transition-colors body-font font-medium px-3 py-2 rounded-lg hover:bg-primary/5"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Resource Hub
+              </a>
+              <div className="pt-2 border-t border-border">
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="w-full button-font border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                  >
+                    Login / Dashboard
+                  </Button>
+                </Link>
+              </div>
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );
