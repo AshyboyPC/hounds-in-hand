@@ -27,7 +27,7 @@ const PrivacyPolicy = () => {
               <section className="mb-12">
                 <h2 className="text-3xl display-font text-primary mb-4">Introduction</h2>
                 <p className="body-font text-gray-700 leading-relaxed mb-4">
-                  Hounds in Hand ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy 
+                  Connect 4 Paws ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy 
                   explains how we collect, use, disclose, and safeguard your information when you visit our website 
                   and use our services.
                 </p>
@@ -156,9 +156,9 @@ const PrivacyPolicy = () => {
                   If you have questions or concerns about this Privacy Policy, please contact us:
                 </p>
                 <div className="bg-gray-50 p-6 rounded-lg">
-                  <p className="body-font text-gray-700 mb-2"><strong>Hounds in Hand</strong></p>
+                  <p className="body-font text-gray-700 mb-2"><strong>Connect 4 Paws</strong></p>
                   <p className="body-font text-gray-700 mb-2">123 Rescue Lane, Campbell, PA 15001</p>
-                  <p className="body-font text-gray-700">Email: privacy@houndsinhand.org</p>
+                  <p className="body-font text-gray-700">Email: privacy@connect4paws.org</p>
                   <p className="body-font text-gray-700">Phone: (555) 123-4567</p>
                 </div>
               </section>

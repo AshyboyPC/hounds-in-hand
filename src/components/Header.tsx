@@ -16,11 +16,11 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-2 sm:space-x-3">
             <img 
               src={hopeLogo} 
-              alt="Hounds in Hand" 
+              alt="Connect 4 Paws" 
               className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20"
             />
             <div className="hidden sm:block">
-              <h1 className="text-sm sm:text-lg heading-font text-primary">Hounds in Hand</h1>
+              <h1 className="text-sm sm:text-lg heading-font text-primary">Connect 4 Paws</h1>
             </div>
           </Link>
 

@@ -108,7 +108,7 @@ const DashboardLayout = ({ children, user }: DashboardLayoutProps) => {
       <div className="flex items-center space-x-2 p-6 border-b">
         <Heart className="w-8 h-8 text-destructive" fill="currentColor" />
         <div>
-          <h2 className="text-lg font-semibold text-primary">Hounds in Hand</h2>
+          <h2 className="text-lg font-semibold text-primary">Connect 4 Paws</h2>
           <p className="text-xs text-muted-foreground">Dashboard</p>
         </div>
       </div>
@@ -195,7 +195,7 @@ const DashboardLayout = ({ children, user }: DashboardLayoutProps) => {
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex items-center gap-x-4 lg:gap-x-6">
               <Heart className="w-8 h-8 text-destructive" fill="currentColor" />
-              <h1 className="text-lg font-semibold text-primary">Hounds in Hand</h1>
+              <h1 className="text-lg font-semibold text-primary">Connect 4 Paws</h1>
             </div>
             <div className="flex items-center gap-x-4 lg:gap-x-6 ml-auto">
               <Button variant="ghost" size="sm">

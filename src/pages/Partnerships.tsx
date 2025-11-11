@@ -48,9 +48,9 @@ const Partnerships = () => {
         <FadeIn direction="up">
           <div className="bg-white px-6 py-16">
             <div className="max-w-4xl mx-auto text-center mb-12">
-              <h2 className="text-3xl display-font text-primary mb-6">Why Partner With Hounds in Hand?</h2>
+              <h2 className="text-3xl display-font text-primary mb-6">Why Partner With Connect 4 Paws?</h2>
               <p className="text-lg body-font text-gray-700 leading-relaxed">
-                By partnering with Hounds in Hand, your organization joins a network dedicated to animal welfare 
+                By partnering with Connect 4 Paws, your organization joins a network dedicated to animal welfare 
                 and community support. Together, we can create lasting change.
               </p>
             </div>

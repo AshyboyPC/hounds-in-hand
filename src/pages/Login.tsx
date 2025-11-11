@@ -88,7 +88,7 @@ const Login = () => {
                 </div>
                 <CardTitle className="text-2xl display-font text-primary">Welcome Back</CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  Sign in to access your Hounds in Hand dashboard
+                  Sign in to access your Connect 4 Paws dashboard
                 </CardDescription>
               </CardHeader>
 

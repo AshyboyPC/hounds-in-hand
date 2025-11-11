@@ -12,10 +12,10 @@ const Footer = () => {
           <div className="flex items-center justify-center space-x-3">
             <img 
               src={hopeLogo} 
-              alt="Hounds in Hand" 
+              alt="Connect 4 Paws" 
               className="w-10 h-10 filter brightness-0 invert"
             />
-            <span className="text-base heading-font">Hounds in Hand</span>
+            <span className="text-base heading-font">Connect 4 Paws</span>
           </div>
 
           {/* Social Icons */}
@@ -54,10 +54,10 @@ const Footer = () => {
           <div className="flex items-center space-x-3">
             <img 
               src={hopeLogo} 
-              alt="Hounds in Hand" 
+              alt="Connect 4 Paws" 
               className="w-12 h-12 filter brightness-0 invert"
             />
-            <span className="text-lg heading-font">Hounds in Hand</span>
+            <span className="text-lg heading-font">Connect 4 Paws</span>
           </div>
 
           {/* Center - Navigation Links */}
@@ -93,7 +93,7 @@ const Footer = () => {
         {/* Copyright Line */}
         <div className="text-center border-t border-primary-foreground/20 pt-4 mt-4 md:mt-0">
           <p className="text-primary-foreground/70 body-font text-xs sm:text-sm">
-            © 2025 Hounds in Hand
+            © 2025 Connect 4 Paws
           </p>
         </div>
       </div>

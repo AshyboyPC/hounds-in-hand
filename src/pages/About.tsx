@@ -55,7 +55,7 @@ const About = () => {
         <div className="bg-gradient-to-br from-blue-50 to-orange-50 px-6 py-20">
           <div className="max-w-4xl mx-auto text-center">
             <FadeIn direction="down">
-              <h1 className="text-5xl display-font text-primary mb-6">About Hounds in Hand</h1>
+              <h1 className="text-5xl display-font text-primary mb-6">About Connect 4 Paws</h1>
               <p className="text-xl body-font text-gray-700 leading-relaxed">
                 We're a network of dedicated shelters, volunteers, and advocates working together 
                 to rescue, rehabilitate, and rehome dogs across Pennsylvania.
@@ -70,7 +70,7 @@ const About = () => {
             <div className="max-w-4xl mx-auto">
               <h2 className="text-4xl display-font text-primary mb-6 text-center">Our Mission</h2>
               <p className="text-lg body-font text-gray-700 leading-relaxed mb-6">
-                Hounds in Hand was founded in 2015 with a simple but powerful mission: to ensure that 
+                Connect 4 Paws was founded in 2015 with a simple but powerful mission: to ensure that 
                 every dog in need finds a loving, permanent home. We connect shelters across Campbell, 
                 Harrisburg, and York, creating a unified network that maximizes resources and increases 
                 adoption success rates.
