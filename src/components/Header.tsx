@@ -65,7 +65,7 @@ const Header = () => {
           </Link>
 
           {/* Dock Navigation - Desktop */}
-          <div className="hidden lg:flex flex-1 justify-start items-center relative h-full ml-8">
+          <div className="hidden lg:flex flex-1 justify-start items-center relative h-full ml-4">
             <Dock
               className="bg-white/80 backdrop-blur-md border border-gray-200/50 shadow-xl rounded-2xl pb-3"
               defaultAnimatingIndexes={activeIndex >= 0 ? [activeIndex] : []}
