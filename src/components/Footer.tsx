@@ -1,8 +1,11 @@
 import { Instagram, Facebook, Twitter } from "lucide-react";
-import hopeLogo from "@/assets/image-removebg-preview (18).png";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  };
+
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -11,9 +14,9 @@ const Footer = () => {
           {/* Logo and Name */}
           <div className="flex items-center justify-center space-x-3">
             <img 
-              src={hopeLogo} 
+              src="/connect_4_paws_logo.png" 
               alt="Connect 4 Paws" 
-              className="w-10 h-10 filter brightness-0 invert"
+              className="w-10 h-10 brightness-0 invert"
             />
             <span className="text-base heading-font">Connect 4 Paws</span>
           </div>
@@ -33,16 +36,16 @@ const Footer = () => {
 
           {/* Navigation Links */}
           <nav className="flex flex-wrap items-center justify-center gap-4 text-sm">
-            <Link to="/about" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+            <Link to="/about" onClick={scrollToTop} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
               About
             </Link>
-            <Link to="/contact" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+            <Link to="/contact" onClick={scrollToTop} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
               Contact
             </Link>
-            <Link to="/privacy-policy" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+            <Link to="/privacy-policy" onClick={scrollToTop} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
               Privacy Policy
             </Link>
-            <Link to="/partnerships" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+            <Link to="/partnerships" onClick={scrollToTop} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
               Partnerships
             </Link>
           </nav>
@@ -53,25 +56,25 @@ const Footer = () => {
           {/* Left Side - Logo and School Name */}
           <div className="flex items-center space-x-3">
             <img 
-              src={hopeLogo} 
+              src="/connect_4_paws_logo.png" 
               alt="Connect 4 Paws" 
-              className="w-12 h-12 filter brightness-0 invert"
+              className="w-12 h-12 brightness-0 invert"
             />
             <span className="text-lg heading-font">Connect 4 Paws</span>
           </div>
 
           {/* Center - Navigation Links */}
           <nav className="flex items-center space-x-8">
-            <Link to="/about" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+            <Link to="/about" onClick={scrollToTop} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
               About
             </Link>
-            <Link to="/contact" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+            <Link to="/contact" onClick={scrollToTop} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
               Contact
             </Link>
-            <Link to="/privacy-policy" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+            <Link to="/privacy-policy" onClick={scrollToTop} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
               Privacy Policy
             </Link>
-            <Link to="/partnerships" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
+            <Link to="/partnerships" onClick={scrollToTop} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors body-font">
               Partnerships
             </Link>
           </nav>

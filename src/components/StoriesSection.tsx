@@ -1,73 +1,106 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, Star, AlertCircle, ArrowRight } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { CircularImageGallery } from "@/components/ui/circular-image-gallery";
-import { Animated, AnimatedList } from "@/components/ui/animated";
+import { Animated } from "@/components/ui/animated";
+import { useNavigate } from "react-router-dom";
+
+interface Story {
+  id: number;
+  title: string;
+  content: string;
+  type: "success" | "urgent" | "update";
+  shelter: string;
+}
 
 const StoriesSection = () => {
-  const stories = [
+  const navigate = useNavigate();
+  
+  // Sample stories - in production, fetch from Supabase
+  const stories: Story[] = [
     {
       id: 1,
       title: "Bella's New Beginning",
-      content: "After 3 months in foster care, Bella found her forever home with the Martinez family. Her journey from a shy, timid pup to a confident companion has been incredible to witness.",
-      image: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&h=600&fit=crop"
+      content: "From shy pup to confident companion. After 6 months, she found her forever home!",
+      type: "success",
+      shelter: "Hope for Hounds"
     },
     {
-      id: 2, 
-      title: "Max's Road to Recovery",
-      content: "Thanks to generous community donations, Max received the life-saving surgery he needed. He's now recovering well and enjoying his new lease on life with his foster family.",
-      image: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&h=600&fit=crop"
-    },
-    {
-      id: 3,
-      title: "Community Support in Action",
-      content: "Campbell High School students organized a food drive that collected over 200 pounds of dog food for local shelters. Their efforts will help feed dozens of dogs in need.",
-      image: "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800&h=600&fit=crop"
-    },
-    {
-      id: 4,
-      title: "Senior Dog Finds Love",
-      content: "At 10 years young, Buddy was adopted by a wonderful family who fell in love with his gentle nature. He's now enjoying his golden years in comfort and love.",
-      image: "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800&h=600&fit=crop"
-    },
-    {
-      id: 5,
-      title: "Puppy Training Program Success",
-      content: "Our new puppy training program has helped over 50 puppies learn basic commands and socialization skills, making them more adoptable and well-adjusted family members.",
-      image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&h=600&fit=crop"
-    },
-    {
-      id: 6,
-      title: "Volunteer of the Month",
-      content: "Sarah Johnson has been named Volunteer of the Month for her tireless dedication to walking and socializing our shelter dogs, helping them stay happy and healthy.",
-      image: "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800&h=600&fit=crop"
+      id: 2,
+      title: "Senior Dogs Need Fosters",
+      content: "5 senior dogs urgently need foster homes. Can you help?",
+      type: "urgent",
+      shelter: "Harrisburg Rescue"
     }
   ];
 
+  const getStoryStyle = (type: string) => {
+    switch (type) {
+      case "success":
+        return { icon: Heart, color: "text-rose-500", bg: "bg-rose-50 dark:bg-rose-900/20" };
+      case "urgent":
+        return { icon: AlertCircle, color: "text-destructive", bg: "bg-destructive/10" };
+      default:
+        return { icon: Star, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-900/20" };
+    }
+  };
+
   return (
-    <section className="px-4 sm:px-6 lg:px-8 py-12 sm:py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
-        <Animated type="text" className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-primary mb-4">
-            Shelter Stories & Updates
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Discover heartwarming success stories and the latest news from our shelter community.
-          </p>
-        </Animated>
-        
-        <Animated type="fade" delay={0.2}>
-          <div className="mb-12">
-            <CircularImageGallery stories={stories} />
+    <section className="h-full">
+      <Card className="h-full border-none shadow-sm bg-neutral-50/50 dark:bg-neutral-900/50 p-6 sm:p-8 rounded-3xl">
+        <Animated type="text" className="mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl sm:text-3xl heading-font text-neutral-900 dark:text-white mb-2">
+                Shelter Stories
+              </h2>
+              <p className="text-neutral-600 dark:text-neutral-400 body-font text-sm">
+                Heartwarming updates from our community.
+              </p>
+            </div>
           </div>
         </Animated>
-        
-        <Animated type="fade" delay={0.4} className="text-center mt-8">
-          <p className="text-sm text-muted-foreground">
-            Click on the dots below to browse through our stories. Each story represents a life changed through compassion and care.
-          </p>
-        </Animated>
-      </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          {stories.map((story, index) => {
+            const style = getStoryStyle(story.type);
+            const Icon = style.icon;
+            
+            return (
+              <Animated key={story.id} type="fade" delay={index * 0.1}>
+                <Card className={`h-full border-none shadow-sm hover:shadow-md transition-all duration-300 bg-white dark:bg-neutral-800 group cursor-pointer ${
+                  story.type === "urgent" ? "ring-2 ring-destructive/20" : ""
+                }`} onClick={() => navigate("/stories")}>
+                  <CardHeader className="pb-2">
+                    <div className={`w-10 h-10 rounded-xl ${style.bg} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className={`w-5 h-5 ${style.color}`} />
+                    </div>
+                    <CardTitle className="text-lg heading-font text-neutral-900 dark:text-white group-hover:text-primary transition-colors">
+                      {story.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-neutral-600 dark:text-neutral-300 body-font text-sm mb-2">
+                      {story.content}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {story.shelter}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Animated>
+            );
+          })}
+        </div>
+
+        <Button 
+          variant="ghost" 
+          className="w-full text-primary hover:text-primary/80"
+          onClick={() => navigate("/stories")}
+        >
+          View All Stories
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
+      </Card>
     </section>
   );
 };

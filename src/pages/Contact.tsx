@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import PageTransition from "@/components/PageTransition";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -22,13 +23,13 @@ const Contact = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     setIsSubmitted(true);
     setIsSubmitting(false);
-    
+
     // Reset form after 3 seconds
     setTimeout(() => {
       setIsSubmitted(false);
@@ -85,7 +86,7 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <PageTransition className="min-h-screen bg-background flex flex-col">
       <Header />
 
       <main className="flex-1">
@@ -230,7 +231,7 @@ const Contact = () => {
       </main>
 
       <Footer />
-    </div>
+    </PageTransition>
   );
 };
 

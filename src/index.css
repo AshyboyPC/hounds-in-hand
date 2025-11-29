@@ -2,6 +2,20 @@
 
 /* Custom Fonts */
 @font-face {
+  font-family: 'Goldplay';
+  src: url('/Goldplay Alt Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Goldplay';
+  src: url('/Goldplay SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
   font-family: 'CsBelia';
   src: url('./assets/CsBeliaDemoRegular-q2B1x.otf') format('opentype');
   font-weight: normal;
@@ -135,34 +149,34 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
-    font-weight: 500;
+    font-family: 'Goldplay', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
+    font-weight: 600;
   }
 
   /* Typography Classes */
   .heading-font {
-    font-family: 'MadeGentle', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-weight: normal;
+    font-family: 'Goldplay', 'MadeGentle', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
   }
 
   .display-font {
-    font-family: 'MadeGentle', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-weight: normal;
+    font-family: 'Goldplay', 'MadeGentle', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
   }
 
   .subheading-font {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
-    font-weight: 600;
+    font-family: 'Goldplay', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
+    font-weight: 700;
   }
 
   .body-font {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
-    font-weight: 500;
+    font-family: 'Goldplay', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
+    font-weight: 600;
   }
 
   .button-font {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
-    font-weight: 700;
+    font-family: 'Goldplay', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
+    font-weight: 600;
   }
 
   /* Custom slider styling for warning color thumb */

@@ -41,27 +41,34 @@ interface RadiusFilter {
   active: boolean;
 }
 
-// Real-time shelter search using completely free APIs
+// Real-time shelter search using completely free APIs - COMPREHENSIVE SEARCH
 const searchRealShelters = async (userLat: number, userLon: number, maxDistance: number): Promise<Shelter[]> => {
   const shelters: Shelter[] = [];
   
   try {
-    // Use OpenStreetMap Nominatim API (completely free, no API key required)
-    const nominatimShelters = await searchNominatimShelters(userLat, userLon, maxDistance);
-    shelters.push(...nominatimShelters);
+    console.log(`Starting comprehensive search within ${maxDistance} miles...`);
     
-    // Also search using Overpass API (OpenStreetMap query language - completely free)
-    const overpassShelters = await searchOverpassShelters(userLat, userLon, maxDistance);
+    // Search both APIs in parallel for maximum coverage
+    const [nominatimShelters, overpassShelters] = await Promise.all([
+      searchNominatimShelters(userLat, userLon, maxDistance),
+      searchOverpassShelters(userLat, userLon, maxDistance)
+    ]);
+    
+    console.log(`Nominatim found: ${nominatimShelters.length} shelters`);
+    console.log(`Overpass found: ${overpassShelters.length} shelters`);
+    
+    shelters.push(...nominatimShelters);
     shelters.push(...overpassShelters);
     
     // Remove duplicates based on coordinates
     const uniqueShelters = removeDuplicateShelters(shelters);
+    console.log(`Total unique shelters found: ${uniqueShelters.length}`);
     
     return uniqueShelters;
     
   } catch (error) {
     console.log('Error in real-time shelter search:', error);
-    return [];
+    return shelters.length > 0 ? removeDuplicateShelters(shelters) : [];
   }
 };
 
@@ -103,7 +110,6 @@ const processNominatimResult = (item: any, userLat: number, userLon: number, max
 // Search using OpenStreetMap Nominatim (completely free) - COMPREHENSIVE SEARCH
 const searchNominatimShelters = async (userLat: number, userLon: number, maxDistance: number): Promise<Shelter[]> => {
   const shelters: Shelter[] = [];
-  const radiusMeters = maxDistance * 1609; // Convert miles to meters
   
   // Calculate bounding box for more accurate searches
   const latDelta = maxDistance / 69.0; // 1 degree latitude ≈ 69 miles
@@ -111,98 +117,72 @@ const searchNominatimShelters = async (userLat: number, userLon: number, maxDist
   const viewbox = `${userLon - lonDelta},${userLat + latDelta},${userLon + lonDelta},${userLat - latDelta}`;
   
   try {
-    // 1. Search by amenity type: animal_shelter
-    console.log('Searching for animal_shelter amenity...');
-    const amenityResponse = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&amenity=animal_shelter&viewbox=${viewbox}&bounded=1&limit=50&addressdetails=1&extratags=1&namedetails=1`,
-      { headers: { 'User-Agent': 'HopeForHounds/1.0' } }
-    );
-    
-    if (amenityResponse.ok) {
-      const data = await amenityResponse.json();
-      console.log(`Found ${data.length} animal_shelter amenities`);
-      for (const item of data) {
-        const shelter = processNominatimResult(item, userLat, userLon, maxDistance, 'nominatim-amenity');
-        if (shelter) shelters.push(shelter);
-      }
-    }
-    
-    // 2. Text search for various shelter types
+    // COMPREHENSIVE: Search for EVERY possible shelter type
     const searchTerms = [
       'animal shelter',
-      'dog shelter', 
+      'dog shelter',
       'cat shelter',
       'pet shelter',
       'humane society',
       'spca',
+      'aspca',
       'animal rescue',
       'dog rescue',
+      'cat rescue',
       'pet rescue',
       'animal adoption',
-      'pet adoption center',
+      'pet adoption',
+      'dog adoption',
+      'cat adoption',
       'animal welfare',
-      'rescue organization'
+      'animal care',
+      'pet care center',
+      'animal control',
+      'animal services',
+      'rescue organization',
+      'rescue league',
+      'animal league',
+      'pet sanctuary',
+      'animal sanctuary',
+      'no kill shelter',
+      'foster care animals',
+      'animal hospital rescue',
+      'veterinary rescue',
+      'wildlife rescue',
+      'stray animal shelter'
     ];
     
-    for (const term of searchTerms) {
-      try {
-        console.log(`Searching for: ${term}...`);
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(term)}&viewbox=${viewbox}&bounded=1&limit=50&addressdetails=1&extratags=1&namedetails=1`,
-          { headers: { 'User-Agent': 'HopeForHounds/1.0' } }
-        );
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log(`Found ${data.length} results for "${term}"`);
-          for (const item of data) {
-            // Filter for organizations/places only, not just addresses
-            if (item.class === 'place' || item.class === 'amenity' || item.type === 'yes' || 
-                item.osm_type === 'node' || item.osm_type === 'way') {
-              const shelter = processNominatimResult(item, userLat, userLon, maxDistance, `nominatim-${term.replace(/\s+/g, '-')}`);
-              if (shelter) shelters.push(shelter);
-            }
-          }
-        }
-        
-        // Small delay to respect API rate limits
-        await new Promise(resolve => setTimeout(resolve, 200));
-      } catch (error) {
-        console.log(`Error searching for ${term}:`, error);
-      }
-    }
-    
-    // 3. Search veterinary clinics that might offer shelter/rescue services
-    console.log('Searching veterinary amenities...');
-    const vetResponse = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&amenity=veterinary&viewbox=${viewbox}&bounded=1&limit=50&addressdetails=1&extratags=1&namedetails=1`,
-      { headers: { 'User-Agent': 'HopeForHounds/1.0' } }
+    // Run ALL searches in parallel for maximum coverage
+    const searchPromises = searchTerms.map(term =>
+      fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(term)}&viewbox=${viewbox}&bounded=1&limit=50&addressdetails=1&extratags=1&namedetails=1`,
+        { headers: { 'User-Agent': 'HopeForHounds/1.0' } }
+      )
+        .then(res => res.ok ? res.json() : [])
+        .catch(() => [])
     );
     
-    if (vetResponse.ok) {
-      const vetData = await vetResponse.json();
-      console.log(`Found ${vetData.length} veterinary locations`);
-      for (const item of vetData) {
-        // Check if it's actually a shelter or rescue by name
-        const checkName = (item.namedetails?.name || item.name || item.display_name || '').toLowerCase();
-        if (checkName.includes('shelter') || checkName.includes('rescue') || 
-            checkName.includes('humane') || checkName.includes('spca') || 
-            checkName.includes('adoption')) {
-          const shelter = processNominatimResult(item, userLat, userLon, maxDistance, 'nominatim-vet');
+    const results = await Promise.all(searchPromises);
+    
+    // Process all results
+    results.forEach((data, index) => {
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          const shelter = processNominatimResult(item, userLat, userLon, maxDistance, `nominatim-${searchTerms[index].replace(/\s+/g, '-')}`);
           if (shelter) shelters.push(shelter);
-        }
+        });
       }
-    }
+    });
     
   } catch (error) {
     console.log('Error with Nominatim search:', error);
   }
   
-  console.log(`Total Nominatim results before deduplication: ${shelters.length}`);
+  console.log(`Total Nominatim results: ${shelters.length}`);
   return shelters;
 };
 
-// Search using Overpass API (OpenStreetMap query language - completely free)
+// Search using Overpass API (OpenStreetMap query language - completely free) - COMPREHENSIVE
 const searchOverpassShelters = async (userLat: number, userLon: number, maxDistance: number): Promise<Shelter[]> => {
   const shelters: Shelter[] = [];
   
@@ -210,30 +190,30 @@ const searchOverpassShelters = async (userLat: number, userLon: number, maxDista
     // Convert miles to meters
     const radiusMeters = maxDistance * 1609;
     
-    // Comprehensive Overpass query to find animal shelters by multiple criteria
+    // COMPREHENSIVE Overpass query to find EVERY possible shelter
     const overpassQuery = `
       [out:json][timeout:25];
       (
-        // Search by amenity=animal_shelter
+        // All animal shelter amenities
         node["amenity"="animal_shelter"](around:${radiusMeters},${userLat},${userLon});
         way["amenity"="animal_shelter"](around:${radiusMeters},${userLat},${userLon});
         relation["amenity"="animal_shelter"](around:${radiusMeters},${userLat},${userLon});
         
-        // Search by office type (many rescues are tagged as offices)
-        node["office"="ngo"]["name"~"shelter|rescue|humane|spca|animal",i](around:${radiusMeters},${userLat},${userLon});
-        way["office"="ngo"]["name"~"shelter|rescue|humane|spca|animal",i](around:${radiusMeters},${userLat},${userLon});
-        node["office"="charity"]["name"~"shelter|rescue|humane|spca|animal",i](around:${radiusMeters},${userLat},${userLon});
-        way["office"="charity"]["name"~"shelter|rescue|humane|spca|animal",i](around:${radiusMeters},${userLat},${userLon});
-        node["office"="association"]["name"~"shelter|rescue|humane|spca|animal",i](around:${radiusMeters},${userLat},${userLon});
-        way["office"="association"]["name"~"shelter|rescue|humane|spca|animal",i](around:${radiusMeters},${userLat},${userLon});
+        // All office types that could be shelters
+        node["office"~"ngo|charity|association|foundation"]["name"~"shelter|rescue|humane|spca|animal|pet|dog|cat|adoption",i](around:${radiusMeters},${userLat},${userLon});
+        way["office"~"ngo|charity|association|foundation"]["name"~"shelter|rescue|humane|spca|animal|pet|dog|cat|adoption",i](around:${radiusMeters},${userLat},${userLon});
         
-        // Search by name patterns with various amenity types
-        node["amenity"~"veterinary|clinic"]["name"~"shelter|rescue|humane|spca|adoption",i](around:${radiusMeters},${userLat},${userLon});
-        way["amenity"~"veterinary|clinic"]["name"~"shelter|rescue|humane|spca|adoption",i](around:${radiusMeters},${userLat},${userLon});
+        // Veterinary clinics that might be shelters
+        node["amenity"="veterinary"]["name"~"shelter|rescue|humane|spca|adoption|sanctuary",i](around:${radiusMeters},${userLat},${userLon});
+        way["amenity"="veterinary"]["name"~"shelter|rescue|humane|spca|adoption|sanctuary",i](around:${radiusMeters},${userLat},${userLon});
         
-        // Search for social facilities that might be shelters
-        node["amenity"="social_facility"]["name"~"animal|pet|dog|cat",i](around:${radiusMeters},${userLat},${userLon});
-        way["amenity"="social_facility"]["name"~"animal|pet|dog|cat",i](around:${radiusMeters},${userLat},${userLon});
+        // Social facilities for animals
+        node["amenity"="social_facility"]["name"~"animal|pet|dog|cat|shelter|rescue",i](around:${radiusMeters},${userLat},${userLon});
+        way["amenity"="social_facility"]["name"~"animal|pet|dog|cat|shelter|rescue",i](around:${radiusMeters},${userLat},${userLon});
+        
+        // Any place with animal/pet/shelter in the name
+        node["name"~"animal shelter|pet shelter|dog shelter|cat shelter|humane society|spca|rescue|adoption center|animal welfare|pet rescue|sanctuary",i](around:${radiusMeters},${userLat},${userLon});
+        way["name"~"animal shelter|pet shelter|dog shelter|cat shelter|humane society|spca|rescue|adoption center|animal welfare|pet rescue|sanctuary",i](around:${radiusMeters},${userLat},${userLon});
       );
       out center tags;
     `;
@@ -306,17 +286,12 @@ const removeDuplicateShelters = (shelters: Shelter[]): Shelter[] => {
   });
 };
 
-// Generate nearby shelters using real-time API search
+// Generate nearby shelters using real-time API search - REAL DATA ONLY
 const generateNearbyShelters = async (userLat: number, userLon: number, maxDistance: number): Promise<Shelter[]> => {
-  // Use real-time API search to find actual shelters
+  // Use real-time API search to find actual shelters - NO FALLBACKS
   const realShelters = await searchRealShelters(userLat, userLon, maxDistance);
   
-  // If no real shelters found, generate some local ones as fallback
-  if (realShelters.length === 0) {
-    const localShelters = generateLocalShelters(userLat, userLon, maxDistance);
-    return localShelters;
-  }
-  
+  // Return only real data, even if empty
   return realShelters;
 };
 
@@ -418,10 +393,10 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const [isSearchingShelters, setIsSearchingShelters] = useState(false);
   const [shelterSearchResults, setShelterSearchResults] = useState<string>('');
   const [radiusFilters, setRadiusFilters] = useState<RadiusFilter[]>([
-    { label: '5 miles', miles: 5, color: '#10B981', active: true },
-    { label: '10 miles', miles: 10, color: '#F59E0B', active: true },
-    { label: '25 miles', miles: 25, color: '#EF4444', active: true },
-    { label: '50 miles', miles: 50, color: '#8B5CF6', active: true }
+    { label: '10 miles', miles: 10, color: '#10B981', active: false },
+    { label: '25 miles', miles: 25, color: '#F59E0B', active: false },
+    { label: '50 miles', miles: 50, color: '#EF4444', active: true },
+    { label: '100 miles', miles: 100, color: '#8B5CF6', active: false }
   ]);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -429,30 +404,51 @@ const MapComponent: React.FC<MapComponentProps> = ({
   // Find nearby shelters based on user location and radius filters
   const findNearbyShelters = async (userLat: number, userLon: number) => {
     setIsSearchingShelters(true);
-    setShelterSearchResults('Searching for real shelters...');
+    setShelterSearchResults('Searching for ALL shelters in your area...');
     
     const activeFilters = radiusFilters.filter(filter => filter.active);
+    
+    // If no filters active, don't search
+    if (activeFilters.length === 0) {
+      setNearbyShelters([]);
+      setShelterSearchResults('Please select at least one distance filter.');
+      setIsSearchingShelters(false);
+      return;
+    }
+    
     const maxRadius = Math.max(...activeFilters.map(f => f.miles));
+    const activeRadii = activeFilters.map(f => f.miles).sort((a, b) => a - b);
+    const radiusText = activeRadii.join(', ') + ' miles';
     
     try {
-      // Search for real shelters using APIs
+      // Show immediate feedback
+      setShelterSearchResults(`Searching shelters within ${radiusText}... This may take a moment.`);
+      
+      // Search for real shelters using comprehensive APIs with MAX radius
       const generatedShelters = await generateNearbyShelters(userLat, userLon, maxRadius);
       
+      // Calculate distance for each shelter
       const sheltersWithDistance = generatedShelters.map(shelter => {
         const distance = calculateDistance(userLat, userLon, shelter.coordinates[1], shelter.coordinates[0]);
         return { ...shelter, distance };
       });
 
+      // STRICT FILTERING: Only show shelters within the ACTIVE filter distances
       const filteredShelters = sheltersWithDistance.filter(shelter => {
+        // Check if shelter distance is within ANY of the active filter ranges
         return activeFilters.some(filter => shelter.distance <= filter.miles);
       });
 
       setNearbyShelters(filteredShelters);
-      setShelterSearchResults(`Found ${filteredShelters.length} real shelters nearby`);
+      if (filteredShelters.length === 0) {
+        setShelterSearchResults(`No shelters found within ${radiusText}. Try expanding your search radius.`);
+      } else {
+        setShelterSearchResults(`✓ Found ${filteredShelters.length} real shelters within ${radiusText}!`);
+      }
       addShelterMarkers(filteredShelters);
     } catch (error) {
       console.error('Error searching for shelters:', error);
-      setShelterSearchResults('Error searching for shelters. Please try again.');
+      setShelterSearchResults('Unable to find shelters. Try searching a different location.');
     } finally {
       setIsSearchingShelters(false);
     }
@@ -472,11 +468,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
       const distance = shelter.distance;
       let color = '#6B7280'; // Default gray
       
-      // Determine color based on distance
-      if (distance <= 5) color = '#10B981'; // Green
-      else if (distance <= 10) color = '#F59E0B'; // Amber
-      else if (distance <= 25) color = '#EF4444'; // Red
-      else if (distance <= 50) color = '#8B5CF6'; // Purple
+      // Determine color based on which filter range it falls into
+      if (distance <= 10) color = '#10B981'; // Green - 10 miles
+      else if (distance <= 25) color = '#F59E0B'; // Amber - 25 miles
+      else if (distance <= 50) color = '#EF4444'; // Red - 50 miles
+      else if (distance <= 100) color = '#8B5CF6'; // Purple - 100 miles
 
       console.log(`Adding marker ${index + 1}: ${shelter.name} at ${shelter.coordinates} (${distance.toFixed(1)} miles)`);
 
@@ -681,8 +677,13 @@ const MapComponent: React.FC<MapComponentProps> = ({
     newFilters[index].active = !newFilters[index].active;
     setRadiusFilters(newFilters);
     
-    // Re-search if user location is available
+    // IMMEDIATELY re-search with new filters if user location is available
     if (userLocation) {
+      // Clear existing markers first
+      const existingMarkers = document.querySelectorAll('.shelter-marker');
+      existingMarkers.forEach(marker => marker.remove());
+      
+      // Search again with updated filters
       findNearbyShelters(userLocation[1], userLocation[0]);
     }
   };

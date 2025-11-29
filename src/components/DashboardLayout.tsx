@@ -29,6 +29,7 @@ import {
   MapPin
 } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import Header from "@/components/Header";
 
 interface User {
   email: string;
@@ -139,11 +140,10 @@ const DashboardLayout = ({ children, user }: DashboardLayoutProps) => {
               <li key={item.href}>
                 <Link
                   to={item.href}
-                  className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                    isActive
-                      ? "bg-primary text-white"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  }`}
+                  className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${isActive
+                    ? "bg-primary text-white"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <item.icon className="w-5 h-5" />
@@ -170,20 +170,21 @@ const DashboardLayout = ({ children, user }: DashboardLayoutProps) => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white border-r border-gray-200">
-          <NavContent />
+    <div className="min-h-screen bg-background flex flex-col">
+      <Header />
+      <div className="flex-1 flex">
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block lg:w-72 lg:flex-col border-r border-gray-200 bg-white">
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto h-[calc(100vh-64px)] sticky top-16">
+            <NavContent />
+          </div>
         </div>
-      </div>
 
-      {/* Mobile Header */}
-      <div className="lg:hidden">
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6">
+        {/* Mobile Header (Sidebar Trigger) */}
+        <div className="lg:hidden fixed bottom-4 right-4 z-50">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm" className="lg:hidden">
+              <Button size="icon" className="rounded-full h-12 w-12 shadow-lg">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
@@ -191,63 +192,16 @@ const DashboardLayout = ({ children, user }: DashboardLayoutProps) => {
               <NavContent />
             </SheetContent>
           </Sheet>
-
-          <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-            <div className="flex items-center gap-x-4 lg:gap-x-6">
-              <Heart className="w-8 h-8 text-destructive" fill="currentColor" />
-              <h1 className="text-lg font-semibold text-primary">Connect 4 Paws</h1>
-            </div>
-            <div className="flex items-center gap-x-4 lg:gap-x-6 ml-auto">
-              <Button variant="ghost" size="sm">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-primary text-white text-xs">
-                        {user.name.split(" ").map(n => n[0]).join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate(`/dashboard/${user.role}/profile`)}>
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Sign out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="lg:pl-72">
-        <main className="py-6">
-          <div className="px-4 sm:px-6 lg:px-8">
-            {children}
-          </div>
-        </main>
+        {/* Main Content */}
+        <div className="flex-1 min-w-0">
+          <main className="py-6">
+            <div className="px-4 sm:px-6 lg:px-8">
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   );

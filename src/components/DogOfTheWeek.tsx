@@ -1,60 +1,107 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import dogOfWeek from "@/assets/dog-of-week.jpg";
-import { FadeIn, ScaleIn } from "@/components/animations";
+import { Dog, Bone, Heart, Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+interface FeaturedDog {
+  id: string;
+  name: string;
+  breed: string;
+  age: string;
+  description: string;
+  shelter_name: string;
+  photo_url?: string;
+}
+
+// Sample featured dog - in production, this would come from Supabase
+const sampleFeaturedDog: FeaturedDog = {
+  id: "1",
+  name: "Bella",
+  breed: "Lab Mix",
+  age: "2 years",
+  description: "Sweet soul who loves cuddles & walks. Ready for a forever home.",
+  shelter_name: "Hope for Hounds Campbell",
+  photo_url: "/api/placeholder/400/300"
+};
 
 const DogOfTheWeek = () => {
+  const navigate = useNavigate();
+  const [featuredDog, setFeaturedDog] = useState<FeaturedDog>(sampleFeaturedDog);
+
+  // In production, fetch from Supabase
+  // useEffect(() => {
+  //   const fetchFeaturedDog = async () => {
+  //     const { data } = await supabase
+  //       .from('dogs')
+  //       .select('*, shelters(name)')
+  //       .eq('is_dog_of_week', true)
+  //       .single();
+  //     if (data) setFeaturedDog(data);
+  //   };
+  //   fetchFeaturedDog();
+  // }, []);
+
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Dog of the Week Header */}
-      <FadeIn delay={0.2}>
-        <div className="text-center">
-          <h3 className="text-lg sm:text-xl heading-font text-primary mb-4 sm:mb-6">
+    <div className="h-full">
+      <Card className="h-full border-none shadow-sm bg-white dark:bg-neutral-800 overflow-hidden rounded-3xl flex flex-col">
+        <div className="bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-900/40 dark:to-orange-900/20 p-6 flex items-center justify-center relative overflow-hidden flex-1 min-h-[160px]">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <Bone className="w-32 h-32 rotate-12" />
+          </div>
+          <div className="absolute top-3 left-3 flex items-center gap-1 bg-warning/90 text-black px-2 py-1 rounded-full text-xs font-bold">
+            <Star className="w-3 h-3 fill-current" />
             Dog of the Week
-          </h3>
-        </div>
-      </FadeIn>
-
-      {/* Dog Card */}
-      <ScaleIn delay={0.3}>
-        <Card className="overflow-hidden">
-          <CardContent className="p-0">
-            <img 
-              src={dogOfWeek} 
-              alt="Dog of the Week" 
-              className="w-full h-40 sm:h-48 object-cover"
-            />
-            <div className="p-3 sm:p-4">
-              <h4 className="text-base sm:text-lg heading-font mb-2">Bella</h4>
-              <p className="text-xs sm:text-sm text-muted-foreground mb-2 body-font">2-year-old Labrador mix</p>
-              <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 body-font leading-relaxed">
-                Meet Bella – a 2-year-old Labrador mix with the sweetest personality. Bella loves cuddles, long walks, and is ready to find her forever home.
-              </p>
-              <Button 
-                size="sm" 
-                className="bg-warning hover:bg-warning/90 text-black rounded-full px-4 sm:px-6 button-font w-full sm:w-auto text-sm"
-              >
-                Adopt Me
-              </Button>
+          </div>
+          {featuredDog.photo_url ? (
+            <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg z-10 border-4 border-white">
+              <img 
+                src={featuredDog.photo_url} 
+                alt={featuredDog.name}
+                className="w-full h-full object-cover"
+              />
             </div>
-          </CardContent>
-        </Card>
-      </ScaleIn>
-
-      {/* Urgent Needs Scrolling Bar */}
-      <FadeIn delay={0.4} direction="up">
-        <div className="space-y-3">
-          <Card className="bg-urgent-bg border-destructive/20">
-            <CardContent className="p-3 sm:p-4">
-              <div className="overflow-hidden">
-                <div className="animate-scroll whitespace-nowrap text-urgent-text heading-font text-xs sm:text-sm">
-                  Shelter A needs blankets urgently — Max requires surgery — Shelter B is asking for foster homes — Community drive for food donations this week
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          ) : (
+            <div className="w-20 h-20 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center shadow-sm z-10">
+              <Dog className="w-10 h-10 text-amber-500" />
+            </div>
+          )}
         </div>
-      </FadeIn>
+
+        <CardContent className="p-6 sm:p-8 flex-1 flex flex-col justify-center">
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-xl heading-font text-neutral-900 dark:text-white">
+                  Featured Friend
+                </h3>
+                <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
+              </div>
+              <h4 className="text-2xl font-bold heading-font text-neutral-900 dark:text-white">
+                {featuredDog.name}
+              </h4>
+            </div>
+            <span className="text-xs font-bold button-font text-primary bg-primary/10 px-2 py-1 rounded-md">
+              {featuredDog.age} {featuredDog.breed}
+            </span>
+          </div>
+
+          <p className="text-neutral-600 dark:text-neutral-300 mb-2 body-font text-sm leading-relaxed">
+            {featuredDog.description}
+          </p>
+          
+          <p className="text-xs text-muted-foreground mb-4">
+            From: {featuredDog.shelter_name}
+          </p>
+
+          <Button
+            onClick={() => navigate(`/adopt`)}
+            className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 dark:text-neutral-900 text-white rounded-full button-font shadow-sm mt-auto"
+          >
+            Meet {featuredDog.name}
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 };

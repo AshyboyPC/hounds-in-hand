@@ -1,53 +1,36 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
-import { Heart, Users, Award, Target } from "lucide-react";
+import { Heart, Users, Building2, Handshake, GraduationCap, ListChecks, Calendar, Target } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import PageTransition from "@/components/PageTransition";
 
 const About = () => {
-  const values = [
+  const differentiators = [
     {
-      icon: Heart,
-      title: "Compassion First",
-      description: "Every dog deserves love, care, and a second chance at happiness."
+      icon: Building2,
+      title: "Focus on Smaller Shelters",
+      description: "Most adoption platforms highlight large organizations. Smaller shelters and rescues often struggle to get the same visibility. Connect 4 Paws was created with these groups in mind, giving them an easy way to share their needs and reach the community."
     },
     {
-      icon: Users,
-      title: "Community Driven",
-      description: "We bring together volunteers, shelters, and families to create lasting bonds."
+      icon: ListChecks,
+      title: "Beyond Adoption Listings",
+      description: "While other sites mainly list pets available for adoption, Connect 4 Paws goes further. We help shelters share volunteer opportunities, requests for supplies and donations, and community events and adoption drives."
     },
     {
-      icon: Award,
-      title: "Excellence in Care",
-      description: "We maintain the highest standards in animal welfare and adoption practices."
+      icon: GraduationCap,
+      title: "Student-Led Mission",
+      description: "Unlike large national platforms, Connect 4 Paws grew out of a school club — the Help-a-Hound Club. We're a student-led initiative inspired by visiting shelters like the Atlanta Humane Society and seeing the impact strong community connections can make."
     },
     {
-      icon: Target,
-      title: "Mission Focused",
-      description: "Our goal is simple: find loving homes for every dog in need."
-    }
-  ];
-
-  const team = [
-    {
-      name: "Dr. Emily Rodriguez",
-      role: "Founder & Director",
-      bio: "Veterinarian with 15+ years of experience in animal rescue and rehabilitation."
-    },
-    {
-      name: "Mike Chen",
-      role: "Operations Manager",
-      bio: "Former shelter coordinator passionate about improving adoption processes."
-    },
-    {
-      name: "Sarah Johnson",
-      role: "Volunteer Coordinator",
-      bio: "Community organizer dedicated to building strong volunteer networks."
+      icon: Handshake,
+      title: "Community Connection First",
+      description: "Our goal isn't just to place pets in homes — it's to build lasting relationships between shelters and the communities around them. That means making it simple for people to discover local shelters, learn their stories, and support them in meaningful ways."
     }
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <PageTransition className="min-h-screen bg-background flex flex-col">
       <Header />
 
       <main className="flex-1">
@@ -57,56 +40,67 @@ const About = () => {
             <FadeIn direction="down">
               <h1 className="text-5xl display-font text-primary mb-6">About Connect 4 Paws</h1>
               <p className="text-xl body-font text-gray-700 leading-relaxed">
-                We're a network of dedicated shelters, volunteers, and advocates working together 
-                to rescue, rehabilitate, and rehome dogs across Pennsylvania.
+                A student-led platform bridging the gap between animal shelters and the community — helping dogs find homes and shelters find support.
               </p>
             </FadeIn>
           </div>
         </div>
 
-        {/* Mission Section */}
+        {/* About Me Section */}
         <FadeIn direction="up">
           <div className="bg-white px-6 py-16">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-4xl display-font text-primary mb-6 text-center">Our Mission</h2>
-              <p className="text-lg body-font text-gray-700 leading-relaxed mb-6">
-                Connect 4 Paws was founded in 2015 with a simple but powerful mission: to ensure that 
-                every dog in need finds a loving, permanent home. We connect shelters across Campbell, 
-                Harrisburg, and York, creating a unified network that maximizes resources and increases 
-                adoption success rates.
-              </p>
-              <p className="text-lg body-font text-gray-700 leading-relaxed">
-                Through our platform, we've helped thousands of dogs find their forever families while 
-                supporting the incredible work of local shelters and volunteers who dedicate their time 
-                and hearts to animal welfare.
-              </p>
+              <h2 className="text-4xl display-font text-primary mb-6 text-center">About Me</h2>
+              <div className="prose prose-lg max-w-none">
+                <p className="text-lg body-font text-gray-700 leading-relaxed mb-6">
+                  Hi, I'm Anand, the secretary of the Help-a-Hound Club at my school. I started Connect 4 Paws to expand the work we do in our club and to create a bridge between animal shelters and the community.
+                </p>
+                <p className="text-lg body-font text-gray-700 leading-relaxed mb-6">
+                  After visiting the Atlanta Humane Society, I saw how valuable it is when shelters have strong ways to share their needs with the public. I wanted to create a resource that smaller shelters can use to do the same — whether it's finding adopters, recruiting volunteers, or spreading awareness about their dogs.
+                </p>
+                <p className="text-lg body-font text-gray-700 leading-relaxed mb-6">
+                  Connect 4 Paws was built to make that connection easier. This site provides a space where shelters can express their needs and where the community can discover opportunities to help.
+                </p>
+                <p className="text-lg body-font text-gray-700 leading-relaxed font-medium text-primary">
+                  Together, we can give more dogs the chance they deserve — a safe home, a caring family, and a hopeful future.
+                </p>
+              </div>
             </div>
           </div>
         </FadeIn>
 
-        {/* Values Section */}
+        {/* How We're Different Section */}
         <div className="bg-gray-50 px-6 py-16">
           <div className="max-w-7xl mx-auto">
             <FadeIn direction="up">
-              <h2 className="text-4xl display-font text-primary mb-12 text-center">Our Values</h2>
+              <div className="text-center mb-12">
+                <h2 className="text-4xl display-font text-primary mb-4">How We're Different</h2>
+                <p className="text-lg body-font text-gray-600 max-w-2xl mx-auto">
+                  There are many great websites that connect people with adoptable pets. So what makes Connect 4 Paws different?
+                </p>
+              </div>
             </FadeIn>
-            
-            <StaggerContainer staggerDelay={0.15} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {values.map((value) => {
-                const IconComponent = value.icon;
+
+            <StaggerContainer staggerDelay={0.15} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {differentiators.map((item) => {
+                const IconComponent = item.icon;
                 return (
-                  <StaggerItem key={value.title}>
+                  <StaggerItem key={item.title}>
                     <Card className="h-full hover:shadow-xl transition-shadow">
-                      <CardContent className="p-6 text-center">
-                        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <IconComponent className="w-8 h-8 text-primary" />
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <IconComponent className="w-7 h-7 text-primary" />
+                          </div>
+                          <div>
+                            <h3 className="text-xl heading-font font-semibold text-primary mb-2">
+                              {item.title}
+                            </h3>
+                            <p className="body-font text-gray-600 leading-relaxed">
+                              {item.description}
+                            </p>
+                          </div>
                         </div>
-                        <h3 className="text-xl heading-font font-semibold text-primary mb-3">
-                          {value.title}
-                        </h3>
-                        <p className="body-font text-gray-600">
-                          {value.description}
-                        </p>
                       </CardContent>
                     </Card>
                   </StaggerItem>
@@ -116,64 +110,54 @@ const About = () => {
           </div>
         </div>
 
-        {/* Team Section */}
-        <div className="bg-white px-6 py-16">
-          <div className="max-w-6xl mx-auto">
-            <FadeIn direction="up">
-              <h2 className="text-4xl display-font text-primary mb-12 text-center">Meet Our Team</h2>
-            </FadeIn>
-            
-            <StaggerContainer staggerDelay={0.15} className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {team.map((member) => (
-                <StaggerItem key={member.name}>
-                  <Card className="hover:shadow-xl transition-shadow">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-24 h-24 bg-gradient-to-br from-primary to-primary/80 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
-                        {member.name.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <h3 className="text-xl heading-font font-semibold text-primary mb-2">
-                        {member.name}
-                      </h3>
-                      <p className="text-sm text-warning font-semibold mb-3">
-                        {member.role}
-                      </p>
-                      <p className="body-font text-gray-600 text-sm">
-                        {member.bio}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
+        {/* What Shelters Can Share Section */}
+        <FadeIn direction="up">
+          <div className="bg-white px-6 py-16">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-3xl display-font text-primary mb-8">What Shelters Can Share</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="border-t-4 border-t-purple-500">
+                  <CardContent className="p-6 text-center">
+                    <Users className="w-10 h-10 text-purple-500 mx-auto mb-3" />
+                    <h3 className="font-semibold text-lg mb-2">Volunteer Opportunities</h3>
+                    <p className="text-sm text-gray-600">Connect with community members who want to help</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-t-4 border-t-orange-500">
+                  <CardContent className="p-6 text-center">
+                    <Heart className="w-10 h-10 text-orange-500 mx-auto mb-3" />
+                    <h3 className="font-semibold text-lg mb-2">Supplies & Donations</h3>
+                    <p className="text-sm text-gray-600">Share wishlists and receive community support</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-t-4 border-t-blue-500">
+                  <CardContent className="p-6 text-center">
+                    <Calendar className="w-10 h-10 text-blue-500 mx-auto mb-3" />
+                    <h3 className="font-semibold text-lg mb-2">Events & Adoption Drives</h3>
+                    <p className="text-sm text-gray-600">Promote community events and find adopters</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </div>
-        </div>
+        </FadeIn>
 
-        {/* Impact Section */}
+        {/* Mission Statement */}
         <FadeIn direction="up">
           <div className="bg-primary text-white px-6 py-16">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl display-font mb-8">Our Impact</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                  <div className="text-5xl font-bold mb-2">5,000+</div>
-                  <div className="text-lg opacity-90">Dogs Adopted</div>
-                </div>
-                <div>
-                  <div className="text-5xl font-bold mb-2">500+</div>
-                  <div className="text-lg opacity-90">Active Volunteers</div>
-                </div>
-                <div>
-                  <div className="text-5xl font-bold mb-2">15</div>
-                  <div className="text-lg opacity-90">Partner Shelters</div>
-                </div>
-              </div>
+              <Target className="w-16 h-16 mx-auto mb-6 opacity-80" />
+              <h2 className="text-3xl display-font mb-6">Our Mission</h2>
+              <p className="text-xl leading-relaxed opacity-90">
+                To build lasting relationships between shelters and the communities around them — making it simple for people to discover local shelters, learn their stories, and support them in meaningful ways.
+              </p>
             </div>
           </div>
         </FadeIn>
       </main>
 
       <Footer />
-    </div>
+    </PageTransition>
   );
 };
 

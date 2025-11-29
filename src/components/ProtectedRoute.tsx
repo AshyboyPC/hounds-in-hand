@@ -1,11 +1,5 @@
-import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-
-interface User {
-  email: string;
-  role: string;
-  name: string;
-}
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -13,22 +7,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error("Error parsing user data:", error);
-        localStorage.removeItem("user");
-      }
-    }
-    setLoading(false);
-  }, []);
+  const { user, profile, loading, isAdminVerified } = useAuth();
 
   if (loading) {
     return (
@@ -45,8 +24,20 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/login" replace />;
+  // Check for role-based access using profile from database
+  const userRole = profile?.role || "community"; // Default to community for new users
+
+  if (allowedRoles && (!userRole || !allowedRoles.includes(userRole))) {
+    // If user is logged in but doesn't have permission, redirect to their dashboard or home
+    return <Navigate to="/" replace />;
+  }
+
+  // Special check for Admin 2FA
+  if (userRole === 'admin' && !isAdminVerified) {
+    // If admin is not verified with 2nd password, redirect to login (or a specific verification page)
+    // For simplicity, we'll handle the verification in the Login component or a dedicated page
+    // But here we block access to dashboard
+    return <Navigate to="/login" state={{ needsAdminVerification: true }} replace />;
   }
 
   return <>{children}</>;

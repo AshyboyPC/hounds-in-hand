@@ -3,23 +3,28 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Lock, Shield } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { FadeIn, ScaleIn, StaggerContainer, StaggerItem } from "@/components/animations";
+import PageTransition from "@/components/PageTransition";
+import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
+import { useNavigate } from "react-router-dom";
 
 const Donate = () => {
+    const navigate = useNavigate();
+
     const handleDonateNow = () => {
+        // In production, this would redirect to a payment processor
         alert("Redirecting to donation platform...");
     };
 
     const handleSponsorDog = () => {
-        alert("Redirecting to dog sponsorship page...");
+        navigate("/adopt");
     };
 
     const handleFulfillNeed = (item: string) => {
-        alert(`Redirecting to fulfill ${item} need...`);
+        navigate("/supply-wishlist");
     };
 
     return (
-        <div className="min-h-screen bg-background flex flex-col">
+        <PageTransition className="min-h-screen bg-background flex flex-col">
             <Header />
 
             <main className="flex-1">
@@ -86,9 +91,16 @@ const Donate = () => {
                         <FadeIn direction="up" delay={0.2}>
                             <div className="text-center mb-8 sm:mb-12">
                                 <h2 className="text-2xl sm:text-3xl display-font text-primary mb-3 sm:mb-4">Fulfill a Wishlist</h2>
-                                <p className="text-base sm:text-lg subheading-font text-muted-foreground px-4">
+                                <p className="text-base sm:text-lg subheading-font text-muted-foreground px-4 mb-4">
                                     See specific items that shelters need (like food, toys, medical supplies).
                                 </p>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => navigate("/supply-wishlist")}
+                                    className="border-primary text-primary hover:bg-primary hover:text-white"
+                                >
+                                    View Full Supply Wishlist →
+                                </Button>
                             </div>
                         </FadeIn>
 
@@ -244,7 +256,7 @@ const Donate = () => {
             </main>
 
             <Footer />
-        </div>
+        </PageTransition>
     );
 };
 

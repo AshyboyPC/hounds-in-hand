@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,50 +10,37 @@ import {
   Users,
   Heart,
   TrendingUp,
-  TrendingDown,
   DollarSign,
-  Calendar,
   Settings,
   Shield,
   AlertTriangle,
   CheckCircle,
   UserPlus,
-  UserMinus,
   Activity
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/DashboardLayout";
-import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
-
-interface User {
-  email: string;
-  role: string;
-  name: string;
-}
+import { useAuth } from "@/contexts/AuthContext";
+import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations/AnimatedSection";
 
 const AdminDashboard = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
+    if (!loading && !user) {
       navigate("/login");
-      return;
     }
-    
-    const parsedUser = JSON.parse(userData);
-    if (parsedUser.role !== "admin") {
-      navigate("/login");
-      return;
-    }
-    
-    setUser(parsedUser);
-  }, [navigate]);
+  }, [user, loading, navigate]);
 
-  if (!user) {
+  if (loading) {
     return <div>Loading...</div>;
   }
+
+  if (!user) return null;
+
+  const userName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || "Admin";
+  const userEmail = user.email || "";
 
   // Mock data for admin dashboard
   const systemStats = {
@@ -173,24 +160,27 @@ const AdminDashboard = () => {
   };
 
   return (
-    <DashboardLayout user={user}>
+    <DashboardLayout user={{ name: userName, email: userEmail, role: "admin" }}>
       <div className="space-y-6">
         {/* Welcome Header */}
-        <div className="bg-gradient-to-r from-destructive to-destructive/80 rounded-xl p-6 text-white">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold mb-2">Admin Dashboard - {user.name.split(" ")[0]}</h1>
-              <p className="text-destructive-foreground/80">
-                System overview: {systemStats.totalDogs} dogs, {systemStats.totalVolunteers} volunteers, {systemStats.adoptionsThisMonth} adoptions this month.
-              </p>
+        <FadeIn>
+          <div className="bg-gradient-to-r from-destructive to-destructive/80 rounded-xl p-6 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold mb-2">Admin Dashboard - {userName.split(" ")[0]}</h1>
+                <p className="text-destructive-foreground/80">
+                  System overview: {systemStats.totalDogs} dogs, {systemStats.totalVolunteers} volunteers, {systemStats.adoptionsThisMonth} adoptions this month.
+                </p>
+              </div>
+              <Shield className="w-16 h-16 text-white/20" />
             </div>
-            <Shield className="w-16 h-16 text-white/20" />
           </div>
-        </div>
+        </FadeIn>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StaggerItem>
+            <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Dogs</CardTitle>
               <Heart className="h-4 w-4 text-muted-foreground" />
@@ -202,7 +192,9 @@ const AdminDashboard = () => {
               </p>
             </CardContent>
           </Card>
+          </StaggerItem>
 
+          <StaggerItem>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Adoptions</CardTitle>
@@ -215,7 +207,9 @@ const AdminDashboard = () => {
               </p>
             </CardContent>
           </Card>
+          </StaggerItem>
 
+          <StaggerItem>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Users</CardTitle>
@@ -228,7 +222,9 @@ const AdminDashboard = () => {
               </p>
             </CardContent>
           </Card>
+          </StaggerItem>
 
+          <StaggerItem>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
@@ -241,9 +237,11 @@ const AdminDashboard = () => {
               </p>
             </CardContent>
           </Card>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
 
         {/* System Alerts */}
+        <FadeIn delay={0.3}>
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -273,8 +271,10 @@ const AdminDashboard = () => {
             </div>
           </CardContent>
         </Card>
+        </FadeIn>
 
         {/* Main Content Tabs */}
+        <FadeIn delay={0.4}>
         <Tabs defaultValue="analytics" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -341,11 +341,10 @@ const AdminDashboard = () => {
                     <div className="border-t pt-2">
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium">Net Income</span>
-                        <span className={`text-lg font-bold ${
-                          systemStats.monthlyDonations - systemStats.operatingCosts > 0 
-                            ? 'text-green-600' 
+                        <span className={`text-lg font-bold ${systemStats.monthlyDonations - systemStats.operatingCosts > 0
+                            ? 'text-green-600'
                             : 'text-red-600'
-                        }`}>
+                          }`}>
                           ${(systemStats.monthlyDonations - systemStats.operatingCosts).toLocaleString()}
                         </span>
                       </div>
@@ -381,7 +380,7 @@ const AdminDashboard = () => {
                       </Button>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-3">
                     {recentUsers.map((user) => (
                       <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
@@ -438,7 +437,7 @@ const AdminDashboard = () => {
                     </p>
                     <Button size="sm" className="w-full">Generate Report</Button>
                   </Card>
-                  
+
                   <Card className="p-4">
                     <h3 className="font-semibold mb-2">Volunteer Report</h3>
                     <p className="text-sm text-muted-foreground mb-4">
@@ -446,7 +445,7 @@ const AdminDashboard = () => {
                     </p>
                     <Button size="sm" className="w-full">Generate Report</Button>
                   </Card>
-                  
+
                   <Card className="p-4">
                     <h3 className="font-semibold mb-2">Financial Report</h3>
                     <p className="text-sm text-muted-foreground mb-4">
@@ -454,7 +453,7 @@ const AdminDashboard = () => {
                     </p>
                     <Button size="sm" className="w-full">Generate Report</Button>
                   </Card>
-                  
+
                   <Card className="p-4">
                     <h3 className="font-semibold mb-2">Medical Report</h3>
                     <p className="text-sm text-muted-foreground mb-4">
@@ -462,7 +461,7 @@ const AdminDashboard = () => {
                     </p>
                     <Button size="sm" className="w-full">Generate Report</Button>
                   </Card>
-                  
+
                   <Card className="p-4">
                     <h3 className="font-semibold mb-2">Operational Report</h3>
                     <p className="text-sm text-muted-foreground mb-4">
@@ -470,7 +469,7 @@ const AdminDashboard = () => {
                     </p>
                     <Button size="sm" className="w-full">Generate Report</Button>
                   </Card>
-                  
+
                   <Card className="p-4">
                     <h3 className="font-semibold mb-2">Custom Report</h3>
                     <p className="text-sm text-muted-foreground mb-4">
@@ -504,7 +503,7 @@ const AdminDashboard = () => {
                       </p>
                       <Button size="sm">Configure Security</Button>
                     </Card>
-                    
+
                     <Card className="p-4">
                       <h3 className="font-semibold mb-2">Notification Settings</h3>
                       <p className="text-sm text-muted-foreground mb-4">
@@ -512,7 +511,7 @@ const AdminDashboard = () => {
                       </p>
                       <Button size="sm">Manage Notifications</Button>
                     </Card>
-                    
+
                     <Card className="p-4">
                       <h3 className="font-semibold mb-2">Backup & Recovery</h3>
                       <p className="text-sm text-muted-foreground mb-4">
@@ -520,7 +519,7 @@ const AdminDashboard = () => {
                       </p>
                       <Button size="sm">Backup Settings</Button>
                     </Card>
-                    
+
                     <Card className="p-4">
                       <h3 className="font-semibold mb-2">Integration Settings</h3>
                       <p className="text-sm text-muted-foreground mb-4">
@@ -534,6 +533,7 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
         </Tabs>
+        </FadeIn>
       </div>
     </DashboardLayout>
   );

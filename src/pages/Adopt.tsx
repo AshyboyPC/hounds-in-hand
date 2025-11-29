@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PageTransition from "@/components/PageTransition";
 import { useNavigate } from "react-router-dom";
 import { FadeIn, ScaleIn, StaggerContainer, StaggerItem } from "@/components/animations";
 
@@ -402,7 +403,7 @@ const Adopt = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <PageTransition className="min-h-screen bg-background flex flex-col">
       <Header />
       
       <main className="flex-1">
@@ -674,7 +675,7 @@ const Adopt = () => {
       </main>
 
       <Footer />
-    </div>
+    </PageTransition>
   );
 };
 
