@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, Heart, Star, AlertCircle, Calendar, Building2, Dog, Users, Package } from "lucide-react";
+import { Search, Heart, Star, AlertCircle, Calendar, Building2, Dog, Users, Package, Info } from "lucide-react";
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn, SlideInLeft, FloatIn, RotateIn } from "@/components/animations";
 import PageTransition from "@/components/PageTransition";
 import { Button } from "@/components/ui/button";
@@ -24,89 +24,26 @@ interface ShelterStory {
   created_at: string;
 }
 
-// Sample data - in production, this would come from Supabase
+// Placeholder data - in production, this would come from Supabase
 const sampleStories: ShelterStory[] = [
   {
     id: "1",
     shelter_id: "1",
-    shelter_name: "Hope for Hounds Campbell",
-    title: "Bella's Journey to Her Forever Home",
-    content: "After 6 months at our shelter, Bella finally found her perfect family! This sweet Lab mix came to us scared and underweight, but with love and care, she blossomed into the most affectionate dog. The Johnson family fell in love with her gentle nature, and now she spends her days playing in their backyard and cuddling on the couch. Thank you to everyone who supported Bella's journey!",
+    shelter_name: "[Shelter Name]",
+    title: "[Story Title]",
+    content: "[Story content will appear here. Shelters can share success stories, urgent needs, events, updates, and thank you messages to engage with the community.]",
     story_type: "success_story",
-    dog_name: "Bella",
+    dog_name: "[Dog Name]",
     photo_url: "/api/placeholder/600/400",
     is_featured: true,
-    created_at: "2025-11-25"
-  },
-  {
-    id: "2",
-    shelter_id: "2",
-    shelter_name: "Harrisburg Animal Rescue",
-    title: "Emergency: Senior Dogs Need Foster Homes",
-    content: "We've received 5 senior dogs from a hoarding situation and urgently need foster families. These sweet seniors just need a quiet place to decompress and receive medical care. Can you open your heart and home? All supplies and vet care provided.",
-    story_type: "urgent_need",
-    is_featured: true,
-    created_at: "2025-11-27"
-  },
-  {
-    id: "3",
-    shelter_id: "1",
-    shelter_name: "Hope for Hounds Campbell",
-    title: "Weekend Adoption Event Success!",
-    content: "What an incredible weekend! Thanks to our amazing volunteers and community supporters, we found homes for 12 dogs at our adoption event. Special thanks to PetSmart for hosting us and to everyone who came out to meet our furry friends.",
-    story_type: "event",
-    photo_url: "/api/placeholder/600/400",
-    is_featured: false,
-    created_at: "2025-11-24"
-  },
-  {
-    id: "4",
-    shelter_id: "3",
-    shelter_name: "York County SPCA",
-    title: "Max's Medical Miracle",
-    content: "When Max arrived, he couldn't walk due to a spinal injury. Thanks to generous donations, he received surgery and months of physical therapy. Today, Max took his first steps in the yard! He's now ready for adoption and looking for a patient family to continue his recovery journey.",
-    story_type: "success_story",
-    dog_name: "Max",
-    photo_url: "/api/placeholder/600/400",
-    is_featured: true,
-    created_at: "2025-11-23"
-  },
-  {
-    id: "5",
-    shelter_id: "2",
-    shelter_name: "Harrisburg Animal Rescue",
-    title: "Thank You, Community Donors!",
-    content: "We're overwhelmed by the response to our supply drive! In just one week, we received over 500 pounds of dog food, 50 beds, and countless toys. Your generosity means our dogs will be warm and well-fed this winter. From the bottom of our hearts, thank you!",
-    story_type: "thank_you",
-    is_featured: false,
-    created_at: "2025-11-22"
-  },
-  {
-    id: "6",
-    shelter_id: "1",
-    shelter_name: "Hope for Hounds Campbell",
-    title: "New Puppy Arrivals!",
-    content: "We welcomed 8 adorable puppies this week! These Lab/Shepherd mixes are about 8 weeks old and will be available for adoption after their vet checks and vaccinations. Stay tuned for adoption announcements!",
-    story_type: "update",
-    photo_url: "/api/placeholder/600/400",
-    is_featured: false,
-    created_at: "2025-11-20"
-  },
-  {
-    id: "7",
-    shelter_id: "3",
-    shelter_name: "York County SPCA",
-    title: "Holiday Adoption Special Coming Soon",
-    content: "Mark your calendars! Our annual Holiday Adoption Event is December 14-15. Reduced adoption fees, holiday treats, and photo ops with Santa Paws! Help us find homes for our dogs before the holidays.",
-    story_type: "event",
-    is_featured: false,
-    created_at: "2025-11-18"
+    created_at: "2025-01-01"
   }
 ];
 
 const ShelterStories = () => {
   const navigate = useNavigate();
   const [stories] = useState<ShelterStory[]>(sampleStories);
+  // Note: In production, useAuth would be used to check if user is a shelter
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [shelterFilter, setShelterFilter] = useState("all");
@@ -192,6 +129,19 @@ const ShelterStories = () => {
             </FadeIn>
           </div>
         </section>
+
+        {/* Shelter Info Banner */}
+        <div className="bg-rose-50 border-b border-rose-200 py-3">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+            <p className="text-sm text-rose-700 flex items-center gap-2">
+              <Info className="w-4 h-4" />
+              <span>Stories on this page are posted by shelters from the <strong>Shelter Dashboard</strong></span>
+            </p>
+            <Button size="sm" variant="outline" className="text-rose-700 border-rose-300" onClick={() => navigate("/login")}>
+              Shelter Login
+            </Button>
+          </div>
+        </div>
 
         {/* Filters */}
         <SlideInLeft delay={0.3}>

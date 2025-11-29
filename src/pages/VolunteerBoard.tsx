@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users, MapPin, Calendar, Search, Heart, Building2 } from "lucide-react";
+import { Clock, Users, MapPin, Calendar, Search, Heart, Building2, Info } from "lucide-react";
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn, SlideInLeft, SlideInRight, FloatIn } from "@/components/animations";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
@@ -31,106 +31,32 @@ interface VolunteerOpportunity {
   is_recurring: boolean;
 }
 
-// Sample data - in production, this would come from Supabase
+// Placeholder data - in production, this would come from Supabase
 const sampleOpportunities: VolunteerOpportunity[] = [
   {
     id: "1",
     shelter_id: "1",
-    shelter_name: "Hope for Hounds Campbell",
-    title: "Dog Walking & Exercise",
-    description: "Take our furry friends on walks, provide exercise, and help with socialization.",
+    shelter_name: "[Shelter Name]",
+    title: "[Opportunity Title]",
+    description: "[Description of the volunteer opportunity will appear here]",
     category: "animal_care",
     difficulty: "beginner",
-    time_commitment: "2 hours",
-    date: "2025-12-05",
+    time_commitment: "[Time]",
+    date: "2025-01-01",
     start_time: "09:00",
     end_time: "11:00",
-    location: "Campbell, CA",
+    location: "[Location]",
     max_volunteers: 10,
-    current_volunteers: 4,
-    is_recurring: true
-  },
-  {
-    id: "2",
-    shelter_id: "1",
-    shelter_name: "Hope for Hounds Campbell",
-    title: "Adoption Event Support",
-    description: "Help organize and run our weekend adoption event. Meet potential families!",
-    category: "events",
-    difficulty: "intermediate",
-    time_commitment: "4 hours",
-    date: "2025-12-07",
-    start_time: "10:00",
-    end_time: "14:00",
-    location: "Campbell Community Center",
-    max_volunteers: 15,
-    current_volunteers: 8,
-    is_recurring: false
-  },
-  {
-    id: "3",
-    shelter_id: "2",
-    shelter_name: "Harrisburg Animal Rescue",
-    title: "Medical Care Assistant",
-    description: "Assist our veterinary team with basic medical care and health monitoring.",
-    category: "medical",
-    difficulty: "advanced",
-    time_commitment: "3 hours",
-    location: "Harrisburg, PA",
-    max_volunteers: 5,
-    current_volunteers: 2,
-    is_recurring: true
-  },
-  {
-    id: "4",
-    shelter_id: "3",
-    shelter_name: "York County SPCA",
-    title: "Dog Training Helper",
-    description: "Work with our training team to help dogs learn basic commands.",
-    category: "training",
-    difficulty: "intermediate",
-    time_commitment: "2 hours",
-    date: "2025-12-06",
-    start_time: "14:00",
-    end_time: "16:00",
-    location: "York, PA",
-    max_volunteers: 8,
-    current_volunteers: 3,
-    is_recurring: true
-  },
-  {
-    id: "5",
-    shelter_id: "1",
-    shelter_name: "Hope for Hounds Campbell",
-    title: "Transport Driver",
-    description: "Help transport dogs to vet appointments or adoption events.",
-    category: "transport",
-    difficulty: "beginner",
-    time_commitment: "Flexible",
-    location: "Campbell Area",
-    current_volunteers: 2,
-    is_recurring: false
-  },
-  {
-    id: "6",
-    shelter_id: "2",
-    shelter_name: "Harrisburg Animal Rescue",
-    title: "Administrative Support",
-    description: "Help with paperwork, data entry, and phone calls.",
-    category: "administration",
-    difficulty: "beginner",
-    time_commitment: "3 hours",
-    location: "Harrisburg, PA",
-    max_volunteers: 4,
-    current_volunteers: 1,
+    current_volunteers: 0,
     is_recurring: true
   }
 ];
 
 const VolunteerBoard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { toast } = useToast();
+  const isShelter = profile?.role === 'shelter' || profile?.role === 'admin';
   const [opportunities, setOpportunities] = useState<VolunteerOpportunity[]>(sampleOpportunities);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -242,6 +168,33 @@ const VolunteerBoard = () => {
             </FadeIn>
           </div>
         </section>
+
+        {/* Shelter Info Banner */}
+        {isShelter ? (
+          <div className="bg-purple-50 border-b border-purple-200 py-3">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+              <p className="text-sm text-purple-700 flex items-center gap-2">
+                <Info className="w-4 h-4" />
+                <span>Opportunities on this page are posted by shelters from the <strong>Shelter Dashboard</strong></span>
+              </p>
+              <Button size="sm" variant="outline" className="text-purple-700 border-purple-300" onClick={() => navigate("/dashboard/shelter")}>
+                Post Opportunity
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-purple-50 border-b border-purple-200 py-3">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+              <p className="text-sm text-purple-700 flex items-center gap-2">
+                <Info className="w-4 h-4" />
+                <span>Are you a shelter? Post volunteer opportunities from the Shelter Dashboard</span>
+              </p>
+              <Button size="sm" variant="outline" className="text-purple-700 border-purple-300" onClick={() => navigate("/login")}>
+                Shelter Login
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* User Status Banner */}
         {user && signedUpIds.length > 0 && (

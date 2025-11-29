@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Package, Search, ExternalLink, Building2, AlertCircle, Heart, DollarSign } from "lucide-react";
+import { Package, Search, ExternalLink, Building2, AlertCircle, Heart, DollarSign, Info } from "lucide-react";
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn, SlideInRight, FloatIn } from "@/components/animations";
 import PageTransition from "@/components/PageTransition";
 import { useNavigate } from "react-router-dom";
@@ -27,105 +27,19 @@ interface SupplyNeed {
   other_link?: string;
 }
 
-// Sample data - in production, this would come from Supabase
+// Placeholder data - in production, this would come from Supabase
 const sampleSupplyNeeds: SupplyNeed[] = [
   {
     id: "1",
     shelter_id: "1",
-    shelter_name: "Hope for Hounds Campbell",
-    item_name: "Large Dog Beds",
-    category: "bedding",
-    quantity_needed: 20,
-    quantity_received: 8,
-    priority: "high",
-    description: "Comfortable beds for our large breed dogs",
-    amazon_link: "https://amazon.com",
-    chewy_link: "https://chewy.com"
-  },
-  {
-    id: "2",
-    shelter_id: "1",
-    shelter_name: "Hope for Hounds Campbell",
-    item_name: "Puppy Food (Grain-Free)",
+    shelter_name: "[Shelter Name]",
+    item_name: "[Item Name]",
     category: "food",
-    quantity_needed: 50,
-    quantity_received: 15,
-    priority: "urgent",
-    description: "High-quality grain-free food for puppies",
-    amazon_link: "https://amazon.com",
-    chewy_link: "https://chewy.com"
-  },
-  {
-    id: "3",
-    shelter_id: "2",
-    shelter_name: "Harrisburg Animal Rescue",
-    item_name: "Flea & Tick Treatment",
-    category: "medical",
-    quantity_needed: 100,
-    quantity_received: 30,
-    priority: "urgent",
-    description: "Monthly flea and tick prevention doses",
-    chewy_link: "https://chewy.com"
-  },
-  {
-    id: "4",
-    shelter_id: "2",
-    shelter_name: "Harrisburg Animal Rescue",
-    item_name: "Kong Toys (Large)",
-    category: "toys",
-    quantity_needed: 30,
-    quantity_received: 12,
-    priority: "medium",
-    description: "Durable toys for enrichment",
-    amazon_link: "https://amazon.com"
-  },
-  {
-    id: "5",
-    shelter_id: "3",
-    shelter_name: "York County SPCA",
-    item_name: "Bleach & Disinfectant",
-    category: "cleaning",
-    quantity_needed: 40,
-    quantity_received: 25,
-    priority: "medium",
-    description: "For daily kennel cleaning",
-    amazon_link: "https://amazon.com"
-  },
-  {
-    id: "6",
-    shelter_id: "3",
-    shelter_name: "York County SPCA",
-    item_name: "Leashes & Collars",
-    category: "other",
-    quantity_needed: 50,
-    quantity_received: 10,
+    quantity_needed: 10,
+    quantity_received: 3,
     priority: "high",
-    description: "Various sizes needed for walks and adoptions",
+    description: "[Item description and details will appear here]",
     amazon_link: "https://amazon.com",
-    chewy_link: "https://chewy.com"
-  },
-  {
-    id: "7",
-    shelter_id: "1",
-    shelter_name: "Hope for Hounds Campbell",
-    item_name: "Blankets & Towels",
-    category: "bedding",
-    quantity_needed: 100,
-    quantity_received: 45,
-    priority: "low",
-    description: "Used blankets and towels welcome!",
-    other_link: "https://example.com/donate"
-  },
-  {
-    id: "8",
-    shelter_id: "2",
-    shelter_name: "Harrisburg Animal Rescue",
-    item_name: "Senior Dog Food",
-    category: "food",
-    quantity_needed: 30,
-    quantity_received: 5,
-    priority: "high",
-    description: "Special formula for senior dogs",
     chewy_link: "https://chewy.com"
   }
 ];
@@ -133,6 +47,7 @@ const sampleSupplyNeeds: SupplyNeed[] = [
 const SupplyWishlist = () => {
   const navigate = useNavigate();
   const [supplyNeeds] = useState<SupplyNeed[]>(sampleSupplyNeeds);
+  // Note: In production, useAuth would be used to check if user is a shelter
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
@@ -209,6 +124,19 @@ const SupplyWishlist = () => {
             </FadeIn>
           </div>
         </section>
+
+        {/* Shelter Info Banner */}
+        <div className="bg-orange-50 border-b border-orange-200 py-3">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+            <p className="text-sm text-orange-700 flex items-center gap-2">
+              <Info className="w-4 h-4" />
+              <span>Supply needs on this page are posted by shelters from the <strong>Shelter Dashboard</strong></span>
+            </p>
+            <Button size="sm" variant="outline" className="text-orange-700 border-orange-300" onClick={() => navigate("/login")}>
+              Shelter Login
+            </Button>
+          </div>
+        </div>
 
         {/* Urgent Needs Banner */}
         {sortedNeeds.some(n => n.priority === "urgent") && (

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Search } from "lucide-react";
+import { Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,7 +7,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 import { useNavigate } from "react-router-dom";
-import { FadeIn, ScaleIn, StaggerContainer, StaggerItem } from "@/components/animations";
+import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Dog {
   id: string;
@@ -26,322 +27,34 @@ interface Dog {
   isAvailable: boolean;
 }
 
-// Sample dog data - in production, this would come from an API
+// Placeholder data - in production, this would come from Supabase
 const sampleDogs: Dog[] = [
   {
     id: '1',
-    name: 'Buddy',
-    breed: 'Golden Retriever',
-    age: '3 years',
-    ageCategory: 'adult',
-    size: 'large',
-    gender: 'male',
-    location: 'Campbell',
-    shelter: 'Hope for Hounds Campbell',
-    temperament: ['Friendly', 'Energetic', 'Good with kids'],
-    description: 'Friendly and energetic dog who loves playing fetch and going on long walks. Great with kids and other pets.',
-    imageUrl: '/api/placeholder/400/300',
-    isAvailable: true
-  },
-  {
-    id: '2',
-    name: 'Luna',
-    breed: 'Labrador Mix',
-    age: '2 years',
-    ageCategory: 'young',
-    size: 'medium',
-    gender: 'female',
-    location: 'Harrisburg',
-    shelter: 'Harrisburg Animal Rescue',
-    temperament: ['Calm', 'Gentle', 'House trained'],
-    description: 'Sweet and gentle girl who loves cuddles and belly rubs. Perfect companion for a quiet home.',
-    imageUrl: '/api/placeholder/400/300',
-    isAvailable: true
-  },
-  {
-    id: '3',
-    name: 'Max',
-    breed: 'German Shepherd',
-    age: '8 years',
-    ageCategory: 'senior',
-    size: 'large',
-    gender: 'male',
-    location: 'York',
-    shelter: 'York County SPCA',
-    temperament: ['Loyal', 'Protective', 'Well-trained'],
-    description: 'Senior dog needs medical care and a loving home for his final years. Very loyal and well-behaved.',
-    imageUrl: '/api/placeholder/400/300',
-    isUrgent: true,
-    isAvailable: true
-  },
-  {
-    id: '4',
-    name: 'Daisy',
-    breed: 'Beagle',
-    age: '4 years',
-    ageCategory: 'adult',
-    size: 'small',
-    gender: 'female',
-    location: 'Campbell',
-    shelter: 'Hope for Hounds Campbell',
-    temperament: ['Playful', 'Curious', 'Friendly'],
-    description: 'Energetic beagle who loves to explore and play. Great with other dogs and enjoys outdoor activities.',
-    imageUrl: '/api/placeholder/400/300',
-    isAvailable: true
-  },
-  {
-    id: '5',
-    name: 'Rocky',
-    breed: 'Mixed Breed',
-    age: '5 years',
+    name: '[Dog Name]',
+    breed: '[Breed]',
+    age: '[Age]',
     ageCategory: 'adult',
     size: 'medium',
     gender: 'male',
-    location: 'Harrisburg',
-    shelter: 'Harrisburg Animal Rescue',
-    temperament: ['Independent', 'Smart', 'Active'],
-    description: 'Independent and smart dog who needs an experienced owner. Loves learning new tricks and staying active.',
-    imageUrl: '/api/placeholder/400/300',
-    isAvailable: true
-  },
-  {
-    id: '6',
-    name: 'Bella',
-    breed: 'Poodle Mix',
-    age: '6 months',
-    ageCategory: 'puppy',
-    size: 'small',
-    gender: 'female',
-    location: 'York',
-    shelter: 'York County SPCA',
-    temperament: ['Playful', 'Affectionate', 'Learning'],
-    description: 'Adorable puppy full of energy and love. Looking for a patient family to help with training.',
-    imageUrl: '/api/placeholder/400/300',
-    isAvailable: true
-  },
-  {
-    id: '7',
-    name: 'Charlie',
-    breed: 'Labrador Retriever',
-    age: '7 years',
-    ageCategory: 'senior',
-    size: 'large',
-    gender: 'male',
-    location: 'Campbell',
-    shelter: 'Hope for Hounds Campbell',
-    temperament: ['Calm', 'Gentle', 'Experienced'],
-    description: 'Gentle senior who loves quiet walks and cozy naps. Perfect for a calm household.',
-    imageUrl: '/api/placeholder/400/300',
-    isUrgent: true,
-    isAvailable: true
-  },
-  {
-    id: '8',
-    name: 'Sadie',
-    breed: 'Border Collie',
-    age: '2 years',
-    ageCategory: 'young',
-    size: 'medium',
-    gender: 'female',
-    location: 'Harrisburg',
-    shelter: 'Harrisburg Animal Rescue',
-    temperament: ['Intelligent', 'Energetic', 'Trainable'],
-    description: 'Highly intelligent and energetic Border Collie needs an active family. Loves agility and training.',
-    imageUrl: '/api/placeholder/400/300',
-    isAvailable: false
-  },
-  {
-    id: '9',
-    name: 'Cooper',
-    breed: 'Corgi',
-    age: '3 years',
-    ageCategory: 'adult',
-    size: 'small',
-    gender: 'male',
-    location: 'York',
-    shelter: 'York County SPCA',
-    temperament: ['Friendly', 'Social', 'Happy'],
-    description: 'Happy and social Corgi who loves meeting new people and dogs. Great for an active family.',
-    imageUrl: '/api/placeholder/400/300',
-    isAvailable: true
-  },
-  {
-    id: '10',
-    name: 'Molly',
-    breed: 'Boxer Mix',
-    age: '9 years',
-    ageCategory: 'senior',
-    size: 'large',
-    gender: 'female',
-    location: 'Campbell',
-    shelter: 'Hope for Hounds Campbell',
-    temperament: ['Loyal', 'Calm', 'Loving'],
-    description: 'Sweet senior boxer mix looking for a quiet retirement home. Loves gentle walks and lots of love.',
-    imageUrl: '/api/placeholder/400/300',
-    isUrgent: true,
-    isAvailable: true
-  },
-  {
-    id: '11',
-    name: 'Zeus',
-    breed: 'German Shepherd',
-    age: '4 years',
-    ageCategory: 'adult',
-    size: 'large',
-    gender: 'male',
-    location: 'Harrisburg',
-    shelter: 'Harrisburg Animal Rescue',
-    temperament: ['Protective', 'Loyal', 'Well-trained'],
-    description: 'Well-trained German Shepherd looking for an experienced owner. Excellent guard dog.',
-    imageUrl: '/api/placeholder/400/300',
-    isAvailable: true
-  },
-  {
-    id: '12',
-    name: 'Lucy',
-    breed: 'Mixed Breed',
-    age: '1 year',
-    ageCategory: 'young',
-    size: 'medium',
-    gender: 'female',
-    location: 'York',
-    shelter: 'York County SPCA',
-    temperament: ['Playful', 'Energetic', 'Friendly'],
-    description: 'Young and playful mixed breed who loves everyone she meets. Full of energy and ready for adventures.',
+    location: '[Location]',
+    shelter: '[Shelter Name]',
+    temperament: ['[Trait 1]', '[Trait 2]'],
+    description: '[Dog description will appear here. Shelters can add details about personality, history, and special needs.]',
     imageUrl: '/api/placeholder/400/300',
     isAvailable: true
   }
 ];
 
-// Function to generate random dogs
-const generateRandomDogs = (count: number, startId: number): Dog[] => {
-  const names = [
-    'Max', 'Bella', 'Charlie', 'Luna', 'Cooper', 'Lucy', 'Rocky', 'Daisy', 'Duke', 'Molly',
-    'Jack', 'Sadie', 'Oliver', 'Sophie', 'Bear', 'Maggie', 'Tucker', 'Chloe', 'Buster', 'Zoe',
-    'Bailey', 'Lily', 'Toby', 'Penny', 'Zeus', 'Ruby', 'Winston', 'Stella', 'Leo', 'Rosie',
-    'Milo', 'Gracie', 'Sam', 'Ellie', 'Oscar', 'Coco', 'Finn', 'Lola', 'Bentley', 'Pepper',
-    'Riley', 'Nala', 'Gus', 'Abby', 'Bruno', 'Maya', 'Jasper', 'Willow', 'Louie', 'Annie',
-    'Ace', 'Roxy', 'Diesel', 'Emma', 'Rex', 'Izzy', 'Thor', 'Sasha', 'Apollo', 'Hazel',
-    'Ranger', 'Piper', 'Scout', 'Harley', 'Bandit', 'Olive', 'Shadow', 'Ginger', 'Hunter', 'Princess',
-    'Murphy', 'Cookie', 'Chance', 'Mia', 'Blue', 'Belle', 'Tank', 'Honey', 'Moose', 'Lady'
-  ];
-  
-  const breeds = [
-    'Labrador Retriever', 'German Shepherd', 'Golden Retriever', 'French Bulldog', 'Bulldog',
-    'Beagle', 'Poodle', 'Rottweiler', 'Yorkshire Terrier', 'Boxer', 'Dachshund',
-    'Siberian Husky', 'Great Dane', 'Doberman', 'Shih Tzu', 'Boston Terrier',
-    'Pomeranian', 'Border Collie', 'Australian Shepherd', 'Cocker Spaniel', 'Pit Bull',
-    'Chihuahua', 'Maltese', 'Corgi', 'Mastiff', 'Pug', 'Jack Russell Terrier',
-    'Mixed Breed', 'Terrier Mix', 'Shepherd Mix', 'Lab Mix', 'Retriever Mix',
-    'Hound Mix', 'Spaniel Mix', 'Collie Mix', 'Pointer Mix', 'Setter Mix'
-  ];
-  
-  const locations = ['Campbell', 'Harrisburg', 'York'];
-  const shelters = {
-    'Campbell': 'Hope for Hounds Campbell',
-    'Harrisburg': 'Harrisburg Animal Rescue',
-    'York': 'York County SPCA'
-  };
-  
-  const temperamentOptions = [
-    'Friendly', 'Energetic', 'Calm', 'Playful', 'Gentle', 'Loyal', 'Smart', 'Active',
-    'Independent', 'Affectionate', 'Protective', 'Social', 'Well-trained', 'House trained',
-    'Good with kids', 'Good with dogs', 'Good with cats', 'Loves to cuddle', 'Trainable'
-  ];
-  
-  const descriptions = [
-    'A wonderful companion looking for a loving home.',
-    'Loves long walks and playing fetch in the park.',
-    'Great family dog who loves children and other pets.',
-    'Very smart and eager to learn new tricks.',
-    'Calm and gentle, perfect for a quiet household.',
-    'Energetic and playful, needs an active family.',
-    'Loyal and protective, excellent guard dog.',
-    'Sweet and affectionate, loves to cuddle on the couch.',
-    'Independent but loving, great for experienced owners.',
-    'Social butterfly who loves meeting new friends.',
-    'Well-trained and obedient, ready for a new home.',
-    'Loves outdoor adventures and hiking trails.',
-    'Perfect apartment dog with moderate energy.',
-    'Gentle soul who just wants to be loved.',
-    'Playful pup full of energy and joy.'
-  ];
-  
-  const ageCategories: Array<'puppy' | 'young' | 'adult' | 'senior'> = ['puppy', 'young', 'adult', 'senior'];
-  const sizes: Array<'small' | 'medium' | 'large'> = ['small', 'medium', 'large'];
-  const genders: Array<'male' | 'female'> = ['male', 'female'];
-  
-  const dogs: Dog[] = [];
-  
-  for (let i = 0; i < count; i++) {
-    const id = (startId + i).toString();
-    const name = names[Math.floor(Math.random() * names.length)];
-    const breed = breeds[Math.floor(Math.random() * breeds.length)];
-    const ageCategory = ageCategories[Math.floor(Math.random() * ageCategories.length)];
-    const size = sizes[Math.floor(Math.random() * sizes.length)];
-    const gender = genders[Math.floor(Math.random() * genders.length)];
-    const location = locations[Math.floor(Math.random() * locations.length)];
-    
-    // Generate age string based on category
-    let age = '';
-    switch(ageCategory) {
-      case 'puppy':
-        age = `${Math.floor(Math.random() * 12) + 1} months`;
-        break;
-      case 'young':
-        age = `${Math.floor(Math.random() * 2) + 1} years`;
-        break;
-      case 'adult':
-        age = `${Math.floor(Math.random() * 4) + 3} years`;
-        break;
-      case 'senior':
-        age = `${Math.floor(Math.random() * 5) + 7} years`;
-        break;
-    }
-    
-    // Select random temperaments
-    const shuffled = [...temperamentOptions].sort(() => 0.5 - Math.random());
-    const temperament = shuffled.slice(0, Math.floor(Math.random() * 3) + 2);
-    
-    const description = descriptions[Math.floor(Math.random() * descriptions.length)];
-    
-    // 10% chance of being urgent (senior dogs more likely)
-    const isUrgent = ageCategory === 'senior' ? Math.random() < 0.2 : Math.random() < 0.05;
-    
-    // 95% available, 5% foster needed
-    const isAvailable = Math.random() < 0.95;
-    
-    dogs.push({
-      id,
-      name,
-      breed,
-      age,
-      ageCategory,
-      size,
-      gender,
-      location,
-      shelter: shelters[location as keyof typeof shelters],
-      temperament,
-      description,
-      imageUrl: '/api/placeholder/400/300',
-      isUrgent,
-      isAvailable
-    });
-  }
-  
-  return dogs;
-};
-
-// Generate 320 additional dogs (starting from ID 13)
-const additionalDogs = generateRandomDogs(320, 13);
-
-// Combine original and generated dogs
-const allDogs = [...sampleDogs, ...additionalDogs];
+// All dogs array (in production, this would be fetched from database)
+const allDogs = sampleDogs;
 
 const DOGS_PER_PAGE = 20;
 
 const Adopt = () => {
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
+  const isShelter = profile?.role === 'shelter' || profile?.role === 'admin';
   const [searchQuery, setSearchQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('all');
   const [ageFilter, setAgeFilter] = useState('all');
@@ -426,6 +139,33 @@ const Adopt = () => {
             </div>
           </div>
         </div>
+
+        {/* Shelter Info Banner */}
+        {isShelter ? (
+          <div className="bg-primary/10 border-b border-primary/20 py-3">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+              <p className="text-sm text-primary flex items-center gap-2">
+                <Info className="w-4 h-4" />
+                <span>Dogs on this page are posted by shelters from the <strong>Shelter Dashboard</strong></span>
+              </p>
+              <Button size="sm" variant="outline" className="text-primary border-primary" onClick={() => navigate("/dashboard/shelter")}>
+                Post a Dog
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-blue-50 border-b border-blue-200 py-3">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+              <p className="text-sm text-blue-700 flex items-center gap-2">
+                <Info className="w-4 h-4" />
+                <span>Are you a shelter? Post your adoptable dogs from the Shelter Dashboard</span>
+              </p>
+              <Button size="sm" variant="outline" className="text-blue-700 border-blue-300" onClick={() => navigate("/login")}>
+                Shelter Login
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Filters & Search Bar Section - Responsive */}
         <div className="bg-gradient-to-br from-slate-50 via-blue-50/40 to-orange-50/40 border-t border-b border-slate-200/60 px-4 sm:px-6 lg:px-16 py-6 lg:py-10 shadow-lg">
