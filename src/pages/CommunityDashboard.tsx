@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Calendar, Package, Bell, Users, Building2, Clock, MapPin, ExternalLink, BookOpen } from "lucide-react";
+import { Heart, Calendar, Package, Bell, Users, Building2, Clock, BookOpen, ArrowLeftRight } from "lucide-react";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
 import { useNavigate } from "react-router-dom";
 import ShelterAccessDialog from "@/components/ShelterAccessDialog";
@@ -66,14 +66,25 @@ const CommunityDashboard = () => {
                   Start your journey by exploring dogs, volunteering, or attending events
                 </p>
               </div>
-              <Button 
-                onClick={() => setShowShelterDialog(true)}
-                variant="outline"
-                className="flex items-center gap-2 border-primary text-primary hover:bg-primary hover:text-white"
-              >
-                <Building2 className="w-4 h-4" />
-                Shelter Access
-              </Button>
+              {(profile?.role === 'shelter' || profile?.role === 'admin') ? (
+                <Button 
+                  onClick={() => navigate("/dashboard/shelter")}
+                  variant="outline"
+                  className="flex items-center gap-2 border-primary text-primary hover:bg-primary hover:text-white"
+                >
+                  <ArrowLeftRight className="w-4 h-4" />
+                  Switch to Shelter Dashboard
+                </Button>
+              ) : (
+                <Button 
+                  onClick={() => setShowShelterDialog(true)}
+                  variant="outline"
+                  className="flex items-center gap-2 border-primary text-primary hover:bg-primary hover:text-white"
+                >
+                  <Building2 className="w-4 h-4" />
+                  Shelter Access
+                </Button>
+              )}
             </div>
           </FadeIn>
 

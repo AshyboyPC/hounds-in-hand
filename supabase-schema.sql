@@ -27,6 +27,15 @@ ALTER TABLE public.shelters ENABLE ROW LEVEL SECURITY;
 -- =====================================================
 -- 2. USER PROFILES TABLE
 -- =====================================================
+-- ACCESS LOGIC:
+-- - ALL users are community members (can access community dashboard)
+-- - Role 'community' = community dashboard only
+-- - Role 'volunteer' = community dashboard only
+-- - Role 'shelter' = BOTH community AND shelter dashboards
+-- - Role 'admin' = BOTH community AND shelter dashboards
+-- When a user enters a shelter access code, they upgrade to 'shelter' role
+-- but KEEP their community access (handled in frontend routing)
+-- =====================================================
 CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
@@ -39,16 +48,19 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- Profiles policies
+-- Profiles policies (DROP first to allow re-running this script)
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.profiles;
 CREATE POLICY "Users can view their own profile"
     ON public.profiles FOR SELECT
     USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
 CREATE POLICY "Users can update their own profile"
     ON public.profiles FOR UPDATE
     USING (auth.uid() = id);
 
 -- This policy allows the function to update profiles
+DROP POLICY IF EXISTS "Function can update profiles" ON public.profiles;
 CREATE POLICY "Function can update profiles"
     ON public.profiles FOR UPDATE
     USING (true)

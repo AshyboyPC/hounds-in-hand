@@ -4,7 +4,8 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Dog, Calendar, Package, Users, Heart, AlertCircle, BookOpen } from "lucide-react";
+import { PlusCircle, Dog, Calendar, Package, Users, Heart, AlertCircle, BookOpen, ArrowLeftRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
 import PostDogForm from "@/components/shelter/PostDogForm";
 import PostEventForm from "@/components/shelter/PostEventForm";
@@ -15,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
 const ShelterDashboard = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [showPostDogForm, setShowPostDogForm] = useState(false);
   const [showPostEventForm, setShowPostEventForm] = useState(false);
@@ -62,12 +64,22 @@ const ShelterDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <FadeIn direction="down">
-            <div className="mb-8">
-              <div className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium mb-3">
-                🏠 Shelter Dashboard
+            <div className="mb-8 flex items-start justify-between">
+              <div>
+                <div className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium mb-3">
+                  🏠 Shelter Dashboard
+                </div>
+                <h1 className="text-4xl display-font text-primary mb-2">Welcome, {userName}!</h1>
+                <p className="text-lg text-muted-foreground">{shelterName}</p>
               </div>
-              <h1 className="text-4xl display-font text-primary mb-2">Welcome, {userName}!</h1>
-              <p className="text-lg text-muted-foreground">{shelterName}</p>
+              <Button 
+                onClick={() => navigate("/dashboard/community")}
+                variant="outline"
+                className="flex items-center gap-2 border-blue-500 text-blue-600 hover:bg-blue-50"
+              >
+                <ArrowLeftRight className="w-4 h-4" />
+                Switch to Community
+              </Button>
             </div>
           </FadeIn>
 

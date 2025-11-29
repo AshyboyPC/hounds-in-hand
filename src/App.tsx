@@ -53,10 +53,11 @@ const AppContent = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Protected Dashboard Routes */}
+        {/* Community dashboard is accessible by ALL logged-in users (everyone is a community member) */}
         <Route
           path="/dashboard/community"
           element={
-            <ProtectedRoute allowedRoles={["volunteer", "community"]}>
+            <ProtectedRoute allowedRoles={["volunteer", "community", "shelter", "admin"]}>
               <CommunityDashboard />
             </ProtectedRoute>
           }
@@ -64,7 +65,7 @@ const AppContent = () => {
         <Route
           path="/dashboard/volunteer"
           element={
-            <ProtectedRoute allowedRoles={["volunteer", "community"]}>
+            <ProtectedRoute allowedRoles={["volunteer", "community", "shelter", "admin"]}>
               <CommunityDashboard />
             </ProtectedRoute>
           }

@@ -27,7 +27,25 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   // Check for role-based access using profile from database
   const userRole = profile?.role || "community"; // Default to community for new users
 
-  if (allowedRoles && (!userRole || !allowedRoles.includes(userRole))) {
+  // ACCESS LOGIC:
+  // - Everyone has community access (all logged-in users)
+  // - Shelter/admin users have access to BOTH community AND shelter dashboards
+  // - This means shelter users can switch between dashboards freely
+  
+  let hasAccess = false;
+  
+  if (!allowedRoles) {
+    // No role restriction - allow all authenticated users
+    hasAccess = true;
+  } else if (allowedRoles.includes(userRole)) {
+    // User's role is explicitly allowed
+    hasAccess = true;
+  } else if (allowedRoles.includes("community") || allowedRoles.includes("volunteer")) {
+    // Community/volunteer routes are accessible by ALL users (everyone is a community member)
+    hasAccess = true;
+  }
+
+  if (!hasAccess) {
     // If user is logged in but doesn't have permission, redirect to their dashboard or home
     return <Navigate to="/" replace />;
   }
