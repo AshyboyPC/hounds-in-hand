@@ -35,12 +35,10 @@ const sampleSupplyNeeds: SupplyNeed[] = [
     shelter_name: "[Shelter Name]",
     item_name: "[Item Name]",
     category: "food",
-    quantity_needed: 10,
-    quantity_received: 3,
-    priority: "high",
-    description: "[Item description and details will appear here]",
-    amazon_link: "https://amazon.com",
-    chewy_link: "https://chewy.com"
+    quantity_needed: 0,
+    quantity_received: 0,
+    priority: "medium",
+    description: "[Item description and details will appear here]"
   }
 ];
 
@@ -234,8 +232,8 @@ const SupplyWishlist = () => {
                             {need.shelter_name}
                           </div>
                         </div>
-                        <Badge className={getPriorityColor(need.priority)}>
-                          {need.priority.toUpperCase()}
+                        <Badge className="bg-gray-200 text-gray-600">
+                          [Priority]
                         </Badge>
                       </div>
                     </CardHeader>

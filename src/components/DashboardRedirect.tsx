@@ -104,7 +104,7 @@ const DashboardRedirect = () => {
             <AlertDialog open={showAdminClaim}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Welcome to Hope for Hounds!</AlertDialogTitle>
+                        <AlertDialogTitle>Welcome to Connect 4 Paws!</AlertDialogTitle>
                         <AlertDialogDescription>
                             We noticed this is your first time logging in. Are you an administrator for the organization?
                         </AlertDialogDescription>

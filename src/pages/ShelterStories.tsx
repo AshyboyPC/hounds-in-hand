@@ -32,11 +32,11 @@ const sampleStories: ShelterStory[] = [
     shelter_name: "[Shelter Name]",
     title: "[Story Title]",
     content: "[Story content will appear here. Shelters can share success stories, urgent needs, events, updates, and thank you messages to engage with the community.]",
-    story_type: "success_story",
+    story_type: "update",
     dog_name: "[Dog Name]",
     photo_url: "/api/placeholder/600/400",
-    is_featured: true,
-    created_at: "2025-01-01"
+    is_featured: false,
+    created_at: ""
   }
 ];
 
@@ -96,6 +96,7 @@ const ShelterStories = () => {
   };
 
   const formatDate = (dateStr: string) => {
+    if (!dateStr) return "[Date]";
     return new Date(dateStr).toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
@@ -211,9 +212,9 @@ const ShelterStories = () => {
                   )}
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <Badge className={getTypeColor(story.story_type)}>
-                        {getTypeIcon(story.story_type)}
-                        <span className="ml-1">{formatType(story.story_type)}</span>
+                      <Badge className="bg-gray-100 text-gray-600">
+                        <Dog className="w-4 h-4" />
+                        <span className="ml-1">[Story Type]</span>
                       </Badge>
                       {story.is_featured && (
                         <Badge variant="outline" className="text-xs">

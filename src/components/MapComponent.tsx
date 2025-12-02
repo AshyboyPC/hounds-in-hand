@@ -117,46 +117,23 @@ const searchNominatimShelters = async (userLat: number, userLon: number, maxDist
   const viewbox = `${userLon - lonDelta},${userLat + latDelta},${userLon + lonDelta},${userLat - latDelta}`;
   
   try {
-    // COMPREHENSIVE: Search for EVERY possible shelter type
+    // Optimized search terms - fewer but more effective queries for faster results
     const searchTerms = [
+      'furkids',
       'animal shelter',
-      'dog shelter',
-      'cat shelter',
-      'pet shelter',
       'humane society',
       'spca',
-      'aspca',
       'animal rescue',
-      'dog rescue',
-      'cat rescue',
       'pet rescue',
-      'animal adoption',
       'pet adoption',
-      'dog adoption',
-      'cat adoption',
-      'animal welfare',
-      'animal care',
-      'pet care center',
-      'animal control',
-      'animal services',
-      'rescue organization',
-      'rescue league',
-      'animal league',
-      'pet sanctuary',
-      'animal sanctuary',
-      'no kill shelter',
-      'foster care animals',
-      'animal hospital rescue',
-      'veterinary rescue',
-      'wildlife rescue',
-      'stray animal shelter'
+      'animal sanctuary'
     ];
     
     // Run ALL searches in parallel for maximum coverage
     const searchPromises = searchTerms.map(term =>
       fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(term)}&viewbox=${viewbox}&bounded=1&limit=50&addressdetails=1&extratags=1&namedetails=1`,
-        { headers: { 'User-Agent': 'HopeForHounds/1.0' } }
+        { headers: { 'User-Agent': 'Connect4Paws/1.0' } }
       )
         .then(res => res.ok ? res.json() : [])
         .catch(() => [])
@@ -190,30 +167,14 @@ const searchOverpassShelters = async (userLat: number, userLon: number, maxDista
     // Convert miles to meters
     const radiusMeters = maxDistance * 1609;
     
-    // COMPREHENSIVE Overpass query to find EVERY possible shelter
+    // Optimized Overpass query - faster with shorter timeout
     const overpassQuery = `
-      [out:json][timeout:25];
+      [out:json][timeout:10];
       (
-        // All animal shelter amenities
         node["amenity"="animal_shelter"](around:${radiusMeters},${userLat},${userLon});
         way["amenity"="animal_shelter"](around:${radiusMeters},${userLat},${userLon});
-        relation["amenity"="animal_shelter"](around:${radiusMeters},${userLat},${userLon});
-        
-        // All office types that could be shelters
-        node["office"~"ngo|charity|association|foundation"]["name"~"shelter|rescue|humane|spca|animal|pet|dog|cat|adoption",i](around:${radiusMeters},${userLat},${userLon});
-        way["office"~"ngo|charity|association|foundation"]["name"~"shelter|rescue|humane|spca|animal|pet|dog|cat|adoption",i](around:${radiusMeters},${userLat},${userLon});
-        
-        // Veterinary clinics that might be shelters
-        node["amenity"="veterinary"]["name"~"shelter|rescue|humane|spca|adoption|sanctuary",i](around:${radiusMeters},${userLat},${userLon});
-        way["amenity"="veterinary"]["name"~"shelter|rescue|humane|spca|adoption|sanctuary",i](around:${radiusMeters},${userLat},${userLon});
-        
-        // Social facilities for animals
-        node["amenity"="social_facility"]["name"~"animal|pet|dog|cat|shelter|rescue",i](around:${radiusMeters},${userLat},${userLon});
-        way["amenity"="social_facility"]["name"~"animal|pet|dog|cat|shelter|rescue",i](around:${radiusMeters},${userLat},${userLon});
-        
-        // Any place with animal/pet/shelter in the name
-        node["name"~"animal shelter|pet shelter|dog shelter|cat shelter|humane society|spca|rescue|adoption center|animal welfare|pet rescue|sanctuary",i](around:${radiusMeters},${userLat},${userLon});
-        way["name"~"animal shelter|pet shelter|dog shelter|cat shelter|humane society|spca|rescue|adoption center|animal welfare|pet rescue|sanctuary",i](around:${radiusMeters},${userLat},${userLon});
+        node["name"~"furkids|shelter|rescue|humane|spca|adoption",i](around:${radiusMeters},${userLat},${userLon});
+        way["name"~"furkids|shelter|rescue|humane|spca|adoption",i](around:${radiusMeters},${userLat},${userLon});
       );
       out center tags;
     `;
@@ -393,10 +354,10 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const [isSearchingShelters, setIsSearchingShelters] = useState(false);
   const [shelterSearchResults, setShelterSearchResults] = useState<string>('');
   const [radiusFilters, setRadiusFilters] = useState<RadiusFilter[]>([
-    { label: '10 miles', miles: 10, color: '#10B981', active: false },
-    { label: '25 miles', miles: 25, color: '#F59E0B', active: false },
+    { label: '10 miles', miles: 10, color: '#10B981', active: true },
+    { label: '25 miles', miles: 25, color: '#F59E0B', active: true },
     { label: '50 miles', miles: 50, color: '#EF4444', active: true },
-    { label: '100 miles', miles: 100, color: '#8B5CF6', active: false }
+    { label: '100 miles', miles: 100, color: '#8B5CF6', active: true }
   ]);
   const [showFilters, setShowFilters] = useState(false);
 

@@ -42,9 +42,6 @@ const sampleOpportunities: VolunteerOpportunity[] = [
     category: "animal_care",
     difficulty: "beginner",
     time_commitment: "[Time]",
-    date: "2025-01-01",
-    start_time: "09:00",
-    end_time: "11:00",
     location: "[Location]",
     max_volunteers: 10,
     current_volunteers: 0,
@@ -293,11 +290,11 @@ const VolunteerBoard = () => {
 
                       <div className="space-y-2 mb-4">
                         <div className="flex flex-wrap gap-2">
-                          <Badge className={getCategoryColor(opp.category)}>
-                            {formatCategory(opp.category)}
+                          <Badge className="bg-gray-100 text-gray-600">
+                            [Category]
                           </Badge>
-                          <Badge className={getDifficultyColor(opp.difficulty)}>
-                            {opp.difficulty.charAt(0).toUpperCase() + opp.difficulty.slice(1)}
+                          <Badge className="bg-gray-100 text-gray-600">
+                            [Difficulty]
                           </Badge>
                         </div>
 

@@ -41,20 +41,20 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email",
-      content: "info@hopeforhounds.org",
-      link: "mailto:info@hopeforhounds.org"
+      content: "anandjmehta6@gmail.com",
+      link: "mailto:anandjmehta6@gmail.com"
     },
     {
       icon: Phone,
       title: "Phone",
-      content: "(555) 123-4567",
-      link: "tel:5551234567"
+      content: "(678) 373-9626",
+      link: "tel:6783739626"
     },
     {
       icon: MapPin,
       title: "Main Office",
-      content: "123 Rescue Lane, Campbell, PA 15001",
-      link: "https://maps.google.com"
+      content: "925 Powder Springs St, Smyrna, GA 30080",
+      link: "https://maps.google.com/?q=925+Powder+Springs+St,+Smyrna,+GA+30080"
     },
     {
       icon: Clock,
@@ -66,22 +66,9 @@ const Contact = () => {
 
   const shelters = [
     {
-      name: "Hope for Hounds Campbell",
-      address: "123 Rescue Lane, Campbell, PA 15001",
-      phone: "(555) 123-4567",
-      email: "campbell@hopeforhounds.org"
-    },
-    {
-      name: "Harrisburg Animal Rescue",
-      address: "456 Shelter Street, Harrisburg, PA 17101",
-      phone: "(555) 234-5678",
-      email: "harrisburg@hopeforhounds.org"
-    },
-    {
-      name: "York County SPCA",
-      address: "789 Care Avenue, York, PA 17401",
-      phone: "(555) 345-6789",
-      email: "york@hopeforhounds.org"
+      name: "Furkids Animal Rescue & Shelters",
+      description: "Multiple locations throughout Georgia",
+      website: "https://furkids.org"
     }
   ];
 
@@ -202,22 +189,19 @@ const Contact = () => {
                             {shelter.name}
                           </h3>
                           <div className="space-y-2 text-sm body-font text-gray-600">
-                            <p className="flex items-start gap-2">
-                              <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                              {shelter.address}
-                            </p>
-                            <p className="flex items-center gap-2">
-                              <Phone className="w-4 h-4 flex-shrink-0" />
-                              <a href={`tel:${shelter.phone}`} className="hover:text-primary">
-                                {shelter.phone}
-                              </a>
-                            </p>
-                            <p className="flex items-center gap-2">
-                              <Mail className="w-4 h-4 flex-shrink-0" />
-                              <a href={`mailto:${shelter.email}`} className="hover:text-primary">
-                                {shelter.email}
-                              </a>
-                            </p>
+                            {shelter.description && (
+                              <p className="flex items-start gap-2">
+                                <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                {shelter.description}
+                              </p>
+                            )}
+                            {shelter.website && (
+                              <p className="flex items-center gap-2">
+                                <a href={shelter.website} target="_blank" rel="noopener noreferrer" className="hover:text-primary text-primary underline">
+                                  Visit Website →
+                                </a>
+                              </p>
+                            )}
                           </div>
                         </CardContent>
                       </Card>

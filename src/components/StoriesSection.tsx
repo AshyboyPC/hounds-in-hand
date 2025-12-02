@@ -15,21 +15,21 @@ interface Story {
 const StoriesSection = () => {
   const navigate = useNavigate();
   
-  // Sample stories - in production, fetch from Supabase
+  // Placeholder stories - will be populated from Supabase
   const stories: Story[] = [
     {
       id: 1,
-      title: "Bella's New Beginning",
-      content: "From shy pup to confident companion. After 6 months, she found her forever home!",
+      title: "[Story Title]",
+      content: "[Story description will appear here when shelters add their stories]",
       type: "success",
-      shelter: "Hope for Hounds"
+      shelter: "[Shelter Name]"
     },
     {
       id: 2,
-      title: "Senior Dogs Need Fosters",
-      content: "5 senior dogs urgently need foster homes. Can you help?",
+      title: "[Story Title]",
+      content: "[Story description will appear here when shelters add their stories]",
       type: "urgent",
-      shelter: "Harrisburg Rescue"
+      shelter: "[Shelter Name]"
     }
   ];
 

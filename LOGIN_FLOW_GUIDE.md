@@ -40,10 +40,8 @@
 2. **Enter credentials:**
    - Email: any email
    - Password: any password
-   - **Shelter Access Code:** Enter one of:
-     - `CAMPBELL2024` - Hope for Hounds Campbell
-     - `HARRISBURG2024` - Harrisburg Animal Rescue
-     - `YORK2024` - York County SPCA
+   - **Shelter Access Code:** Enter:
+     - `FURKIDS2025` - Fur Kids Animal Rescue & Shelters
 
 3. **Click "Sign In"**
    - → Redirects to `/dashboard/shelter`
@@ -135,9 +133,7 @@
 ## 🔑 Access Codes (Demo)
 
 ### Shelter Access Codes:
-- `CAMPBELL2024` - Hope for Hounds Campbell
-- `HARRISBURG2024` - Harrisburg Animal Rescue
-- `YORK2024` - York County SPCA
+- `FURKIDS2025` - Fur Kids Animal Rescue & Shelters
 
 ### Community Access:
 - Leave shelter code field **blank**

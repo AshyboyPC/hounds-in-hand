@@ -2,23 +2,23 @@
 
 ## 🔑 Demo Access Code
 
-**SHELTER123**
+**FURKIDS2025**
 
-This code grants access to "Happy Paws Shelter" in the demo database.
+This code grants access to "Furkids Animal Rescue & Shelters" in the database.
 
 ## 🚀 Quick Start
 
 ### First Time Setup
 1. **Run the database schema**: Follow `SUPABASE_SETUP_GUIDE.md`
 2. **Create a user account**: Sign up or use Supabase dashboard
-3. **Test the access code**: Use `SHELTER123` to become a shelter user
+3. **Test the access code**: Use `FURKIDS2025` to become a shelter user
 
 ## 📍 How to Access Shelter Dashboard
 
 ### Option 1: During Login
 1. Log in with your Supabase account
 2. A popup appears asking for a shelter access code
-3. Enter `SHELTER123` or click "Go to Community" to skip
+3. Enter `FURKIDS2025` or click "Go to Community" to skip
 
 ### Option 2: From Community Dashboard
 1. Log in and go to the Community Dashboard

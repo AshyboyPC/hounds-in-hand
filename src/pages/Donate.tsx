@@ -106,118 +106,98 @@ const Donate = () => {
 
                         {/* Wishlist Items Grid - Responsive */}
                         <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
-                            {/* Dog Food */}
+                            {/* Item 1 */}
                             <StaggerItem>
                                 <Card className="p-4 sm:p-6 bg-white shadow-sm border border-gray-100 rounded-lg text-center">
                                     <CardContent className="p-0">
                                     <div className="mb-3 sm:mb-4 flex justify-center">
-                                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-orange-100 rounded-lg flex items-center justify-center">
-                                            <div className="w-10 h-12 sm:w-12 sm:h-16 bg-orange-400 rounded-sm relative">
-                                                <div className="absolute top-1 left-1 right-1 h-1 sm:h-2 bg-orange-500 rounded-sm"></div>
-                                                <div className="absolute bottom-1 sm:bottom-2 left-1 sm:left-2 right-1 sm:right-2 text-xs text-white font-bold">🐕</div>
-                                            </div>
+                                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-300 rounded-lg"></div>
                                         </div>
                                     </div>
                                     <h3 className="heading-font text-base sm:text-lg font-semibold text-primary mb-2">
-                                        Dog Food
+                                        [Item Name]
                                     </h3>
                                     <p className="body-font text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-                                        Essential nutrition for all sizes
+                                        [Item description]
                                     </p>
                                     <Button
-                                        onClick={() => handleFulfillNeed("Dog Food")}
+                                        onClick={() => handleFulfillNeed("Item")}
                                         className="bg-warning hover:bg-warning/90 text-black px-4 sm:px-6 py-2 rounded-full button-font w-full font-semibold text-sm sm:text-base"
                                     >
                                         Fulfill Need
                                     </Button>
                                 </CardContent>
                             </Card>
-
                             </StaggerItem>
 
-                            {/* Toys for Enrichment */}
+                            {/* Item 2 */}
                             <StaggerItem>
                                 <Card className="p-4 sm:p-6 bg-white shadow-sm border border-gray-100 rounded-lg text-center">
                                     <CardContent className="p-0">
                                     <div className="mb-3 sm:mb-4 flex justify-center">
-                                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-orange-100 rounded-lg flex items-center justify-center">
-                                            <div className="relative">
-                                                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-400 rounded-full"></div>
-                                                <div className="w-4 h-4 sm:w-6 sm:h-6 bg-red-400 rounded-full absolute -top-1 -right-1"></div>
-                                                <div className="w-3 h-6 sm:w-4 sm:h-8 bg-blue-400 rounded-full absolute top-2 left-4 sm:left-6"></div>
-                                            </div>
+                                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-300 rounded-lg"></div>
                                         </div>
                                     </div>
                                     <h3 className="heading-font text-base sm:text-lg font-semibold text-primary mb-2">
-                                        Toys for Enrichment
+                                        [Item Name]
                                     </h3>
                                     <p className="body-font text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-                                        Mental stimulation and play
+                                        [Item description]
                                     </p>
                                     <Button
-                                        onClick={() => handleFulfillNeed("Toys for Enrichment")}
+                                        onClick={() => handleFulfillNeed("Item")}
                                         className="bg-warning hover:bg-warning/90 text-black px-4 sm:px-6 py-2 rounded-full button-font w-full font-semibold text-sm sm:text-base"
                                     >
                                         Fulfill Need
                                     </Button>
                                 </CardContent>
                             </Card>
-
                             </StaggerItem>
 
-                            {/* Blankets & Bedding */}
+                            {/* Item 3 */}
                             <StaggerItem>
                                 <Card className="p-4 sm:p-6 bg-white shadow-sm border border-gray-100 rounded-lg text-center">
                                     <CardContent className="p-0">
                                     <div className="mb-3 sm:mb-4 flex justify-center">
-                                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-pink-100 rounded-lg flex items-center justify-center">
-                                            <div className="space-y-1">
-                                                <div className="w-10 h-1 sm:w-12 sm:h-2 bg-pink-300 rounded-sm"></div>
-                                                <div className="w-10 h-1 sm:w-12 sm:h-2 bg-pink-400 rounded-sm"></div>
-                                                <div className="w-10 h-1 sm:w-12 sm:h-2 bg-yellow-300 rounded-sm"></div>
-                                                <div className="w-10 h-1 sm:w-12 sm:h-2 bg-pink-300 rounded-sm"></div>
-                                            </div>
+                                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-300 rounded-lg"></div>
                                         </div>
                                     </div>
                                     <h3 className="heading-font text-base sm:text-lg font-semibold text-primary mb-2">
-                                        Blankets & Bedding
+                                        [Item Name]
                                     </h3>
                                     <p className="body-font text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-                                        Provides warmth and comfort
+                                        [Item description]
                                     </p>
                                     <Button
-                                        onClick={() => handleFulfillNeed("Blankets & Bedding")}
+                                        onClick={() => handleFulfillNeed("Item")}
                                         className="bg-warning hover:bg-warning/90 text-black px-4 sm:px-6 py-2 rounded-full button-font w-full font-semibold text-sm sm:text-base"
                                     >
                                         Fulfill Need
                                     </Button>
                                 </CardContent>
                             </Card>
-
                             </StaggerItem>
 
-                            {/* Medical Supplies */}
+                            {/* Item 4 */}
                             <StaggerItem>
                                 <Card className="p-4 sm:p-6 bg-white shadow-sm border border-gray-100 rounded-lg text-center">
                                     <CardContent className="p-0">
                                     <div className="mb-3 sm:mb-4 flex justify-center">
-                                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-lg flex items-center justify-center">
-                                            <div className="relative">
-                                                <div className="w-10 h-6 sm:w-12 sm:h-8 bg-white border-2 border-blue-400 rounded-sm"></div>
-                                                <div className="absolute top-1 left-2 sm:left-3 w-4 sm:w-6 h-1 bg-blue-400"></div>
-                                                <div className="absolute top-2 sm:top-3 left-1 w-1 sm:w-2 h-3 sm:h-4 bg-blue-400 rounded-sm"></div>
-                                                <div className="absolute top-1 sm:top-2 right-1 w-2 sm:w-3 h-1 sm:h-2 bg-red-400 rounded-sm"></div>
-                                            </div>
+                                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-300 rounded-lg"></div>
                                         </div>
                                     </div>
                                     <h3 className="heading-font text-base sm:text-lg font-semibold text-primary mb-2">
-                                        Medical Supplies
+                                        [Item Name]
                                     </h3>
                                     <p className="body-font text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-                                        For health check treatments
+                                        [Item description]
                                     </p>
                                     <Button
-                                        onClick={() => handleFulfillNeed("Medical Supplies")}
+                                        onClick={() => handleFulfillNeed("Item")}
                                         className="bg-warning hover:bg-warning/90 text-black px-4 sm:px-6 py-2 rounded-full button-font w-full font-semibold text-sm sm:text-base"
                                     >
                                         Fulfill Need
@@ -247,7 +227,7 @@ const Donate = () => {
                             <div className="text-center">
                                 <h2 className="text-2xl sm:text-3xl display-font text-primary mb-4 sm:mb-6">Your Impact</h2>
                                 <p className="text-lg sm:text-xl subheading-font text-warning px-4">
-                                    $25 feeds a dog for a week • $500 provides emergency care
+                                    Every donation helps feed, shelter, and care for dogs in need
                                 </p>
                             </div>
                         </FadeIn>

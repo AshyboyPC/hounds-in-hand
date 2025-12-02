@@ -300,7 +300,7 @@ const Adopt = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
                           <h3 className="text-sm sm:text-base md:text-lg display-font text-primary truncate">{dog.name}</h3>
-                          <span className="bg-destructive text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full whitespace-nowrap flex-shrink-0">URGENT</span>
+                          <span className="bg-gray-300 text-gray-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full whitespace-nowrap flex-shrink-0">[Status]</span>
                         </div>
                         <p className="text-xs sm:text-sm body-font text-gray-700 mb-2 sm:mb-3 line-clamp-2">
                           {dog.description}
@@ -338,8 +338,8 @@ const Adopt = () => {
                         <div className="w-full h-48 sm:h-56 lg:h-48 bg-gray-200 rounded-lg overflow-hidden">
                           <img src={dog.imageUrl} alt={dog.name} className="w-full h-full object-cover" />
                         </div>
-                        <span className={`absolute top-2 right-2 text-white text-xs px-2 py-1 rounded ${dog.isAvailable ? 'bg-primary' : 'bg-gray-500'}`}>
-                          {dog.isAvailable ? 'Adoptable' : 'Foster Needed'}
+                        <span className="absolute top-2 right-2 text-gray-600 text-xs px-2 py-1 rounded bg-gray-200">
+                          [Status]
                         </span>
                       </div>
                       <h3 className="text-lg sm:text-xl display-font text-primary mb-2">{dog.name}</h3>

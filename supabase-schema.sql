@@ -69,13 +69,13 @@ CREATE POLICY "Function can update profiles"
 -- =====================================================
 -- 3. INITIAL SHELTER DATA
 -- =====================================================
-INSERT INTO public.shelters (name, access_code, city, state, description)
+INSERT INTO public.shelters (name, access_code, state, website, description)
 VALUES (
-    'Campbell High School Hope for Hounds',
-    'HOPEFORHOUNDS',
-    'Campbell',
-    'CA',
-    'Student-led initiative helping dogs find their forever homes.'
+    'Furkids Animal Rescue & Shelters',
+    'FURKIDS2025',
+    'GA',
+    'https://furkids.org',
+    'Georgia''s largest no-kill animal rescue and shelters with multiple locations throughout Georgia.'
 )
 ON CONFLICT (access_code) DO NOTHING;
 
