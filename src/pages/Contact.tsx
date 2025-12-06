@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { FadeIn, ScaleIn, StaggerContainer, StaggerItem } from "@/components/animations";
@@ -9,8 +9,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
+import { toast } from "sonner";
+import emailjs from '@emailjs/browser';
+
+// EmailJS Configuration
+const EMAILJS_SERVICE_ID = "service_a4j0vxr";
+const EMAILJS_TEMPLATE_NOTIFY = "template_notify_admin";  // Email TO Anand with the message
+const EMAILJS_TEMPLATE_AUTOREPLY = "template_autoreply";  // Confirmation email TO the sender
+const EMAILJS_PUBLIC_KEY = "s3SCR6nQ-h7gSw7nn";
 
 const Contact = () => {
+  const formRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -24,17 +33,65 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      // Email 1: Send the message TO Anand (notification with full message)
+      const notifyResult = await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_NOTIFY,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          to_email: "anandjmehta6@gmail.com",
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+      console.log("Notification email sent to Anand:", notifyResult);
 
-    setIsSubmitted(true);
-    setIsSubmitting(false);
+      // Email 2: Send auto-reply confirmation TO the person who submitted
+      const autoReplyResult = await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_AUTOREPLY,
+        {
+          to_name: formData.name,
+          to_email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+      console.log("Auto-reply sent to sender:", autoReplyResult);
 
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    }, 3000);
+      toast.success("Message sent! Check your email for confirmation.");
+      setIsSubmitted(true);
+
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      }, 3000);
+    } catch (error: any) {
+      console.error("Failed to send email:", error);
+      
+      // Fallback: Open mailto link if EmailJS fails
+      const mailtoLink = `mailto:anandjmehta6@gmail.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(
+        `From: ${formData.name} (${formData.email})\n\n${formData.message}`
+      )}`;
+      
+      toast.info("Opening your email client...", {
+        description: "EmailJS not configured. Click to send via your email app.",
+        action: {
+          label: "Open Email",
+          onClick: () => window.open(mailtoLink, "_blank")
+        }
+      });
+      
+      // Auto-open mailto as fallback
+      window.location.href = mailtoLink;
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
