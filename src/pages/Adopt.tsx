@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,8 @@ import PageTransition from "@/components/PageTransition";
 import { useNavigate } from "react-router-dom";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Dog {
   id: string;
@@ -27,34 +29,14 @@ interface Dog {
   isAvailable: boolean;
 }
 
-// Placeholder data - in production, this would come from Supabase
-const sampleDogs: Dog[] = [
-  {
-    id: '1',
-    name: '[Dog Name]',
-    breed: '[Breed]',
-    age: '[Age]',
-    ageCategory: 'adult',
-    size: 'medium',
-    gender: 'male',
-    location: '[Location]',
-    shelter: '[Shelter Name]',
-    temperament: ['[Trait 1]', '[Trait 2]'],
-    description: '[Dog description will appear here. Shelters can add details about personality, history, and special needs.]',
-    imageUrl: '/api/placeholder/400/300',
-    isAvailable: true
-  }
-];
-
-// All dogs array (in production, this would be fetched from database)
-const allDogs = sampleDogs;
-
 const DOGS_PER_PAGE = 20;
 
 const Adopt = () => {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const isShelter = profile?.role === 'shelter' || profile?.role === 'admin';
+  const [allDogs, setAllDogs] = useState<Dog[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('all');
   const [ageFilter, setAgeFilter] = useState('all');
@@ -62,6 +44,55 @@ const Adopt = () => {
   const [breedFilter, setBreedFilter] = useState('all');
   const [showOnlyAvailable, setShowOnlyAvailable] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Fetch dogs from database
+  useEffect(() => {
+    const fetchDogs = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('dogs')
+          .select(`
+            *,
+            shelters (
+              name,
+              city,
+              state
+            )
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data) {
+          const formattedDogs: Dog[] = data.map((dog: any) => ({
+            id: dog.id,
+            name: dog.name || '[Dog Name]',
+            breed: dog.breed || '[Breed]',
+            age: dog.age || '[Age]',
+            ageCategory: dog.age_category || 'adult',
+            size: dog.size || 'medium',
+            gender: dog.gender || 'male',
+            location: dog.shelters?.city || '[Location]',
+            shelter: dog.shelters?.name || '[Shelter Name]',
+            temperament: dog.temperament ? dog.temperament.split(',').map((t: string) => t.trim()) : ['[Trait]'],
+            description: dog.description || '[Dog description will appear here]',
+            imageUrl: dog.photo_url || '/api/placeholder/400/300',
+            isUrgent: dog.is_urgent || false,
+            isAvailable: dog.is_available !== false
+          }));
+          setAllDogs(formattedDogs);
+        }
+      } catch (error: any) {
+        console.error('Error fetching dogs:', error);
+        toast.error('Failed to load dogs');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDogs();
+  }, []);
 
   // Filter dogs based on all criteria
   const filteredDogs = useMemo(() => {
@@ -89,12 +120,12 @@ const Adopt = () => {
 
       return matchesSearch && matchesLocation && matchesAge && matchesSize && matchesBreed && matchesAvailability;
     });
-  }, [searchQuery, locationFilter, ageFilter, sizeFilter, breedFilter, showOnlyAvailable]);
+  }, [allDogs, searchQuery, locationFilter, ageFilter, sizeFilter, breedFilter, showOnlyAvailable]);
 
   // Get urgent dogs
   const urgentDogs = useMemo(() => {
     return allDogs.filter(dog => dog.isUrgent && dog.isAvailable).slice(0, 3);
-  }, []);
+  }, [allDogs]);
 
   // Pagination
   const totalPages = Math.ceil(filteredDogs.length / DOGS_PER_PAGE);
@@ -114,6 +145,21 @@ const Adopt = () => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  if (loading) {
+    return (
+      <PageTransition className="min-h-screen bg-background flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading adoptable dogs...</p>
+          </div>
+        </main>
+        <Footer />
+      </PageTransition>
+    );
+  }
 
   return (
     <PageTransition className="min-h-screen bg-background flex flex-col">

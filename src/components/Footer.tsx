@@ -1,5 +1,6 @@
 import { Instagram, Facebook, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
+import DeveloperBanner from "./DeveloperBanner";
 
 const Footer = () => {
   const scrollToTop = () => {
@@ -7,8 +8,9 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-primary text-primary-foreground">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <>
+      <footer className="bg-primary text-primary-foreground">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Mobile Layout */}
         <div className="md:hidden space-y-4">
           {/* Logo and Name */}
@@ -101,6 +103,8 @@ const Footer = () => {
         </div>
       </div>
     </footer>
+    <DeveloperBanner />
+    </>
   );
 };
 
