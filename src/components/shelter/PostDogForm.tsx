@@ -6,6 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface PostDogFormProps {
   onSubmit: (data: any) => void;
@@ -13,6 +16,8 @@ interface PostDogFormProps {
 }
 
 const PostDogForm = ({ onSubmit, onCancel }: PostDogFormProps) => {
+  const { profile } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     breed: "",
@@ -28,9 +33,62 @@ const PostDogForm = ({ onSubmit, onCancel }: PostDogFormProps) => {
     photos: [] as string[]
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    if (!profile?.shelter_id) {
+      toast.error("You must be associated with a shelter to post dogs");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { data, error } = await supabase
+        .from('dogs')
+        .insert([{
+          shelter_id: profile.shelter_id,
+          name: formData.name,
+          breed: formData.breed,
+          age: formData.age,
+          age_category: formData.ageCategory,
+          size: formData.size,
+          gender: formData.gender,
+          temperament: formData.temperament,
+          description: formData.description,
+          medical_info: formData.medicalInfo || null,
+          is_available: formData.status === 'available',
+          is_urgent: formData.isUrgent,
+          photo_url: formData.photos[0] || null, // Use first photo or null
+        }])
+        .select();
+
+      if (error) throw error;
+
+      toast.success("Dog posted successfully! It will now appear on the Adopt page.");
+      onSubmit(data);
+      
+      // Reset form
+      setFormData({
+        name: "",
+        breed: "",
+        age: "",
+        ageCategory: "adult",
+        size: "medium",
+        gender: "male",
+        temperament: "",
+        description: "",
+        medicalInfo: "",
+        status: "available",
+        isUrgent: false,
+        photos: []
+      });
+    } catch (error: any) {
+      console.error('Error posting dog:', error);
+      toast.error(error.message || "Failed to post dog. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -239,10 +297,10 @@ const PostDogForm = ({ onSubmit, onCancel }: PostDogFormProps) => {
 
           {/* Action Buttons */}
           <div className="flex gap-4 pt-4">
-            <Button type="submit" className="flex-1 bg-primary">
-              Post Dog
+            <Button type="submit" className="flex-1 bg-primary" disabled={isSubmitting}>
+              {isSubmitting ? "Posting..." : "Post Dog"}
             </Button>
-            <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+            <Button type="button" variant="outline" onClick={onCancel} className="flex-1" disabled={isSubmitting}>
               Cancel
             </Button>
           </div>

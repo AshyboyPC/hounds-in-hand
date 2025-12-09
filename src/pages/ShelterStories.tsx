@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,8 @@ import { FadeIn, StaggerContainer, StaggerItem, ScaleIn, SlideInLeft, FloatIn, R
 import PageTransition from "@/components/PageTransition";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface ShelterStory {
   id: string;
@@ -24,29 +26,56 @@ interface ShelterStory {
   created_at: string;
 }
 
-// Placeholder data - in production, this would come from Supabase
-const sampleStories: ShelterStory[] = [
-  {
-    id: "1",
-    shelter_id: "1",
-    shelter_name: "[Shelter Name]",
-    title: "[Story Title]",
-    content: "[Story content will appear here. Shelters can share success stories, urgent needs, events, updates, and thank you messages to engage with the community.]",
-    story_type: "update",
-    dog_name: "[Dog Name]",
-    photo_url: "/api/placeholder/600/400",
-    is_featured: false,
-    created_at: ""
-  }
-];
-
 const ShelterStories = () => {
   const navigate = useNavigate();
-  const [stories] = useState<ShelterStory[]>(sampleStories);
-  // Note: In production, useAuth would be used to check if user is a shelter
+  const [stories, setStories] = useState<ShelterStory[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [shelterFilter, setShelterFilter] = useState("all");
+
+  // Fetch stories from database
+  useEffect(() => {
+    const fetchStories = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('shelter_stories')
+          .select(`
+            *,
+            shelters (
+              name
+            )
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data) {
+          const formattedStories: ShelterStory[] = data.map((story: any) => ({
+            id: story.id,
+            shelter_id: story.shelter_id,
+            shelter_name: story.shelters?.name || '[Shelter Name]',
+            title: story.title || '[Story Title]',
+            content: story.content || '[Story content]',
+            story_type: story.story_type || 'update',
+            dog_name: story.dog_name,
+            photo_url: story.photo_url,
+            is_featured: story.is_featured || false,
+            created_at: story.created_at || ''
+          }));
+          setStories(formattedStories);
+        }
+      } catch (error: any) {
+        console.error('Error fetching stories:', error);
+        toast.error('Failed to load stories');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStories();
+  }, []);
 
   const shelters = [...new Set(stories.map(s => s.shelter_name))];
 
