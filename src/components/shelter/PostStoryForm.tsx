@@ -6,6 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface PostStoryFormProps {
   onSubmit: (data: any) => void;
@@ -13,6 +16,8 @@ interface PostStoryFormProps {
 }
 
 const PostStoryForm = ({ onSubmit, onCancel }: PostStoryFormProps) => {
+  const { profile } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -22,9 +27,50 @@ const PostStoryForm = ({ onSubmit, onCancel }: PostStoryFormProps) => {
     photos: [] as string[]
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    if (!profile?.shelter_id) {
+      toast.error("You must be associated with a shelter to post stories");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { data, error } = await supabase
+        .from('shelter_stories')
+        .insert([{
+          shelter_id: profile.shelter_id,
+          title: formData.title,
+          content: formData.content,
+          story_type: formData.story_type,
+          dog_name: formData.dog_name || null,
+          is_featured: formData.is_featured,
+          photo_url: formData.photos[0] || null,
+        }])
+        .select();
+
+      if (error) throw error;
+
+      toast.success("Story posted successfully! It will now appear on the Stories page.");
+      onSubmit(data);
+      
+      // Reset form
+      setFormData({
+        title: "",
+        content: "",
+        story_type: "update",
+        dog_name: "",
+        is_featured: false,
+        photos: []
+      });
+    } catch (error: any) {
+      console.error('Error posting story:', error);
+      toast.error(error.message || "Failed to post story. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,10 +202,10 @@ const PostStoryForm = ({ onSubmit, onCancel }: PostStoryFormProps) => {
 
           {/* Action Buttons */}
           <div className="flex gap-4 pt-4">
-            <Button type="submit" className="flex-1 bg-primary">
-              Publish Story
+            <Button type="submit" className="flex-1 bg-primary" disabled={isSubmitting}>
+              {isSubmitting ? "Publishing..." : "Publish Story"}
             </Button>
-            <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+            <Button type="button" variant="outline" onClick={onCancel} className="flex-1" disabled={isSubmitting}>
               Cancel
             </Button>
           </div>
