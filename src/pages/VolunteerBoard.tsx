@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { toast as sonnerToast } from "sonner";
 
 interface VolunteerOpportunity {
   id: string;
@@ -31,34 +33,88 @@ interface VolunteerOpportunity {
   is_recurring: boolean;
 }
 
-// Placeholder data - in production, this would come from Supabase
-const sampleOpportunities: VolunteerOpportunity[] = [
-  {
-    id: "1",
-    shelter_id: "1",
-    shelter_name: "[Shelter Name]",
-    title: "[Opportunity Title]",
-    description: "[Description of the volunteer opportunity will appear here]",
-    category: "animal_care",
-    difficulty: "beginner",
-    time_commitment: "[Time]",
-    location: "[Location]",
-    max_volunteers: 10,
-    current_volunteers: 0,
-    is_recurring: true
-  }
-];
-
 const VolunteerBoard = () => {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const { toast } = useToast();
   const isShelter = profile?.role === 'shelter' || profile?.role === 'admin';
-  const [opportunities, setOpportunities] = useState<VolunteerOpportunity[]>(sampleOpportunities);
+  const [opportunities, setOpportunities] = useState<VolunteerOpportunity[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [difficultyFilter, setDifficultyFilter] = useState("all");
   const [signedUpIds, setSignedUpIds] = useState<string[]>([]);
+
+  // Fetch opportunities from database
+  useEffect(() => {
+    const fetchOpportunities = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('volunteer_opportunities')
+          .select(`
+            *,
+            shelters (
+              name
+            )
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data) {
+          const formattedOpps: VolunteerOpportunity[] = data.map((opp: any) => ({
+            id: opp.id,
+            shelter_id: opp.shelter_id,
+            shelter_name: opp.shelters?.name || '[Shelter Name]',
+            title: opp.title || '[Opportunity Title]',
+            description: opp.description || '[Description]',
+            category: opp.category || 'other',
+            difficulty: opp.difficulty || 'beginner',
+            time_commitment: opp.time_commitment || '[Time]',
+            date: opp.date,
+            start_time: opp.start_time,
+            end_time: opp.end_time,
+            location: opp.location,
+            max_volunteers: opp.max_volunteers,
+            current_volunteers: opp.current_volunteers || 0,
+            is_recurring: opp.is_recurring || false
+          }));
+          setOpportunities(formattedOpps);
+        }
+      } catch (error: any) {
+        console.error('Error fetching opportunities:', error);
+        sonnerToast.error('Failed to load volunteer opportunities');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOpportunities();
+  }, []);
+
+  // Fetch user's signups if logged in
+  useEffect(() => {
+    const fetchMySignups = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('volunteer_signups')
+          .select('opportunity_id')
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+        if (data) {
+          setSignedUpIds(data.map(signup => signup.opportunity_id));
+        }
+      } catch (error: any) {
+        console.error('Error fetching signups:', error);
+      }
+    };
+
+    fetchMySignups();
+  }, [user]);
 
   const filteredOpportunities = opportunities.filter(opp => {
     const matchesSearch = searchQuery === "" ||
@@ -70,7 +126,7 @@ const VolunteerBoard = () => {
     return matchesSearch && matchesCategory && matchesDifficulty;
   });
 
-  const handleSignUp = (opportunityId: string, title: string) => {
+  const handleSignUp = async (opportunityId: string, title: string) => {
     if (!user) {
       toast({
         title: "Login Required",
@@ -81,33 +137,71 @@ const VolunteerBoard = () => {
       return;
     }
 
-    if (signedUpIds.includes(opportunityId)) {
-      setSignedUpIds(signedUpIds.filter(id => id !== opportunityId));
-      setOpportunities(opportunities.map(opp => 
-        opp.id === opportunityId 
-          ? { ...opp, current_volunteers: opp.current_volunteers - 1 }
-          : opp
-      ));
-      toast({
-        title: "Sign-up Cancelled",
-        description: `Your registration for "${title}" has been cancelled.`
-      });
-    } else {
-      setSignedUpIds([...signedUpIds, opportunityId]);
-      setOpportunities(opportunities.map(opp => 
-        opp.id === opportunityId 
-          ? { ...opp, current_volunteers: opp.current_volunteers + 1 }
-          : opp
-      ));
-      toast({
-        title: "Signed Up!",
-        description: `You're registered for "${title}". View in your dashboard.`,
-        action: (
-          <Button variant="outline" size="sm" onClick={() => navigate("/dashboard/community")}>
-            View Dashboard
-          </Button>
-        )
-      });
+    try {
+      if (signedUpIds.includes(opportunityId)) {
+        // Cancel signup - delete from database
+        const { error } = await supabase
+          .from('volunteer_signups')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('opportunity_id', opportunityId);
+
+        if (error) throw error;
+
+        setSignedUpIds(signedUpIds.filter(id => id !== opportunityId));
+        setOpportunities(opportunities.map(opp => 
+          opp.id === opportunityId 
+            ? { ...opp, current_volunteers: Math.max(0, opp.current_volunteers - 1) }
+            : opp
+        ));
+        toast({
+          title: "Sign-up Cancelled",
+          description: `Your registration for "${title}" has been cancelled.`
+        });
+      } else {
+        // Sign up - insert into database
+        const { error } = await supabase
+          .from('volunteer_signups')
+          .insert([{
+            user_id: user.id,
+            opportunity_id: opportunityId,
+            status: 'confirmed'
+          }]);
+
+        if (error) throw error;
+
+        // Update current_volunteers count in database
+        const currentOpp = opportunities.find(o => o.id === opportunityId);
+        if (currentOpp) {
+          const { error: updateError } = await supabase
+            .from('volunteer_opportunities')
+            .update({ 
+              current_volunteers: currentOpp.current_volunteers + 1
+            })
+            .eq('id', opportunityId);
+
+          if (updateError) console.error('Error updating volunteer count:', updateError);
+        }
+
+        setSignedUpIds([...signedUpIds, opportunityId]);
+        setOpportunities(opportunities.map(opp => 
+          opp.id === opportunityId 
+            ? { ...opp, current_volunteers: opp.current_volunteers + 1 }
+            : opp
+        ));
+        toast({
+          title: "Signed Up!",
+          description: `You're registered for "${title}". View in your dashboard.`,
+          action: (
+            <Button variant="outline" size="sm" onClick={() => navigate("/dashboard/community")}>
+              View Dashboard
+            </Button>
+          )
+        });
+      }
+    } catch (error: any) {
+      console.error('Error with signup:', error);
+      sonnerToast.error(error.message || 'Failed to process signup');
     }
   };
 
