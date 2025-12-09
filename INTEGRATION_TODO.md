@@ -41,43 +41,61 @@ Connect all dashboard actions to the public website so everything works as one e
 - Fetch from `volunteer_opportunities` table
 - Save signups to `volunteer_signups` table
 
-#### 6. Connect PostVolunteerForm to Database
+#### 6. Connect PostVolunteerForm to Database ✅ DONE
 **File:** `src/components/shelter/PostVolunteerForm.tsx`
-- Add Supabase import
-- Save opportunity to `volunteer_opportunities` table
+- ✅ Added Supabase import
+- ✅ Save opportunity to `volunteer_opportunities` table
+- ✅ Gets shelter_id from authenticated user
+- ✅ Shows success/error toasts
+- ✅ Resets form after successful submission
 
 ### Priority 3: Supply Wishlist
 
-#### 7. Connect Supply Wishlist to Database
+#### 7. Connect Supply Wishlist to Database ✅ DONE
 **File:** `src/pages/SupplyWishlist.tsx`
-- Replace `sampleSupplyNeeds` with real Supabase query
-- Fetch from `supply_needs` table
+- ✅ Replaced `sampleSupplyNeeds` with real Supabase query
+- ✅ Fetches from `supply_needs` table
+- ✅ Joins with `shelters` table for shelter names
+- ✅ Shows loading spinner
+- ✅ Handles errors with toast
+- ✅ All filters work with real data
 
-#### 8. Create PostSupplyNeedForm
+#### 8. Create PostSupplyNeedForm ✅ DONE
 **File:** `src/components/shelter/PostSupplyNeedForm.tsx` (NEW)
-- Create new form component
-- Save to `supply_needs` table
-- Add to ShelterDashboard
+- ✅ Created new form component
+- ✅ Saves to `supply_needs` table
+- ✅ Added to ShelterDashboard
+- ✅ Includes all fields: item_name, category, quantity_needed, priority, description, links
+- ✅ Gets shelter_id from authenticated user
+- ✅ Shows success/error toasts
+- ✅ Resets form after successful submission
 
 ### Priority 4: Homepage Integration
 
-#### 9. Connect Dog of the Week
+#### 9. Connect Dog of the Week ✅ DONE
 **File:** `src/components/DogOfTheWeek.tsx`
-- Fetch featured dog from database
-- Query where `is_dog_of_week = true`
+- ✅ Fetches featured dog from database
+- ✅ Queries where `is_dog_of_week = true`
+- ✅ Shows loading state
+- ✅ Handles no featured dog gracefully
+- ✅ Displays on homepage
 
-#### 10. Connect Stories Section
+#### 10. Connect Stories Section ✅ DONE
 **File:** `src/components/StoriesSection.tsx`
-- Fetch latest 2 stories from database
-- Show on homepage
+- ✅ Fetches latest 2 stories from database
+- ✅ Shows on homepage
+- ✅ Handles loading state
+- ✅ Shows empty state when no stories
 
 ### Priority 5: Community Dashboard
 
-#### 11. Show User's Volunteer Signups
+#### 11. Show User's Volunteer Signups ✅ DONE
 **File:** `src/pages/CommunityDashboard.tsx`
-- Query `volunteer_signups` for current user
-- Display list of signed-up opportunities
-- Allow cancellation
+- ✅ Queries `volunteer_signups` for current user
+- ✅ Displays list of signed-up opportunities
+- ✅ Shows shelter name, date, time commitment
+- ✅ Displays status badges (signed up, confirmed, completed)
+- ✅ Calculates volunteer hours statistics
 
 ---
 

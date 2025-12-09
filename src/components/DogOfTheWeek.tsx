@@ -1,10 +1,71 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dog, Bone, Heart, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+
+interface FeaturedDog {
+  id: string;
+  name: string;
+  breed: string;
+  age: string;
+  description: string;
+  shelter_name: string;
+}
 
 const DogOfTheWeek = () => {
   const navigate = useNavigate();
+  const [featuredDog, setFeaturedDog] = useState<FeaturedDog | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeaturedDog = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('dogs')
+          .select(`
+            id,
+            name,
+            breed,
+            age,
+            description,
+            shelters (
+              name
+            )
+          `)
+          .eq('is_dog_of_week', true)
+          .eq('is_available', true)
+          .limit(1)
+          .single();
+
+        if (error) {
+          // No featured dog found, that's okay
+          console.log('No featured dog found');
+          setFeaturedDog(null);
+        } else if (data) {
+          const shelterName = Array.isArray(data.shelters) 
+            ? (data.shelters[0] as any)?.name 
+            : (data.shelters as any)?.name;
+          setFeaturedDog({
+            id: data.id,
+            name: data.name,
+            breed: data.breed,
+            age: data.age,
+            description: data.description || '',
+            shelter_name: shelterName || 'Unknown Shelter'
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching featured dog:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedDog();
+  }, []);
 
   return (
     <div className="h-full">
@@ -23,30 +84,62 @@ const DogOfTheWeek = () => {
         </div>
 
         <CardContent className="p-6 sm:p-8 flex-1 flex flex-col justify-center">
-          <div className="flex justify-between items-start mb-3">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-xl heading-font text-neutral-900 dark:text-white">
-                  Featured Friend
-                </h3>
-                <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
-              </div>
-              <h4 className="text-2xl font-bold heading-font text-neutral-900 dark:text-white">
-                [Dog Name]
-              </h4>
+          {loading ? (
+            <div className="text-center py-4">
+              <p className="text-sm text-muted-foreground">Loading featured dog...</p>
             </div>
-            <span className="text-xs font-bold button-font text-primary bg-primary/10 px-2 py-1 rounded-md">
-              [Age] [Breed]
-            </span>
-          </div>
+          ) : featuredDog ? (
+            <>
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-xl heading-font text-neutral-900 dark:text-white">
+                      Featured Friend
+                    </h3>
+                    <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
+                  </div>
+                  <h4 className="text-2xl font-bold heading-font text-neutral-900 dark:text-white">
+                    {featuredDog.name}
+                  </h4>
+                </div>
+                <span className="text-xs font-bold button-font text-primary bg-primary/10 px-2 py-1 rounded-md">
+                  {featuredDog.age} • {featuredDog.breed}
+                </span>
+              </div>
 
-          <p className="text-neutral-600 dark:text-neutral-300 mb-2 body-font text-sm leading-relaxed">
-            [Dog description will appear here when shelter adds a featured dog]
-          </p>
-          
-          <p className="text-xs text-muted-foreground mb-4">
-            From: [Shelter Name]
-          </p>
+              <p className="text-neutral-600 dark:text-neutral-300 mb-2 body-font text-sm leading-relaxed line-clamp-3">
+                {featuredDog.description}
+              </p>
+              
+              <p className="text-xs text-muted-foreground mb-4">
+                From: {featuredDog.shelter_name}
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-xl heading-font text-neutral-900 dark:text-white">
+                      Featured Friend
+                    </h3>
+                    <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
+                  </div>
+                  <h4 className="text-2xl font-bold heading-font text-neutral-900 dark:text-white">
+                    Coming Soon
+                  </h4>
+                </div>
+              </div>
+
+              <p className="text-neutral-600 dark:text-neutral-300 mb-2 body-font text-sm leading-relaxed">
+                Check back soon for our featured dog of the week!
+              </p>
+              
+              <p className="text-xs text-muted-foreground mb-4">
+                Shelters can feature a dog from their dashboard
+              </p>
+            </>
+          )}
 
           <Button
             onClick={() => navigate(`/adopt`)}

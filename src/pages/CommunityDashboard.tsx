@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -10,32 +10,118 @@ import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
 import { useNavigate } from "react-router-dom";
 import ShelterAccessDialog from "@/components/ShelterAccessDialog";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+interface VolunteerSignup {
+  id: string;
+  title: string;
+  shelter_name: string;
+  date: string | null;
+  time_commitment: string;
+  status: string;
+  hours_logged: number;
+  opportunity: {
+    title: string;
+    time_commitment: string;
+    date: string | null;
+    shelter: {
+      name: string;
+    };
+  };
+}
 
 const CommunityDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("feed");
   const [showShelterDialog, setShowShelterDialog] = useState(false);
   const { user, profile } = useAuth();
+  const [myVolunteerSignups, setMyVolunteerSignups] = useState<VolunteerSignup[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Get user name from profile (Supabase) or fallback to user email
   const userName = profile?.full_name || profile?.email?.split('@')[0] || user?.email?.split('@')[0] || 'Friend';
-
-  // Sample signed-up volunteer opportunities (in production, fetch from Supabase)
-  const [myVolunteerSignups] = useState([
-    // This would be populated from user's actual sign-ups stored in database
-  ]);
 
   // Sample saved dogs (in production, fetch from Supabase)
   const [savedDogs] = useState([
     // This would be populated from user's saved dogs
   ]);
 
+  useEffect(() => {
+    const fetchVolunteerSignups = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('volunteer_signups')
+          .select(`
+            id,
+            status,
+            hours_logged,
+            volunteer_opportunities (
+              id,
+              title,
+              time_commitment,
+              date,
+              shelters (
+                name
+              )
+            )
+          `)
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const transformedSignups = data?.map(signup => {
+          const opportunity = Array.isArray(signup.volunteer_opportunities) 
+            ? signup.volunteer_opportunities[0] 
+            : signup.volunteer_opportunities;
+          const shelter = Array.isArray(opportunity?.shelters) 
+            ? opportunity.shelters[0] 
+            : opportunity?.shelters;
+          
+          return {
+            id: signup.id,
+            title: opportunity?.title || 'Unknown Opportunity',
+            shelter_name: shelter?.name || 'Unknown Shelter',
+            date: opportunity?.date || null,
+            time_commitment: opportunity?.time_commitment || 'Flexible',
+            status: signup.status,
+            hours_logged: signup.hours_logged || 0,
+            opportunity: {
+              title: opportunity?.title || '',
+              time_commitment: opportunity?.time_commitment || '',
+              date: opportunity?.date || null,
+              shelter: {
+                name: shelter?.name || ''
+              }
+            }
+          };
+        }) || [];
+
+        setMyVolunteerSignups(transformedSignups);
+      } catch (error) {
+        console.error('Error fetching volunteer signups:', error);
+        toast.error('Failed to load volunteer activities');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVolunteerSignups();
+  }, [user]);
+
   // Calculate stats from actual data
   const userData = {
     savedDogs: savedDogs.length,
-    volunteerHours: myVolunteerSignups.reduce((acc: number, v: any) => acc + (v.hours || 0), 0),
+    volunteerHours: myVolunteerSignups.reduce((acc, v) => acc + v.hours_logged, 0),
     donations: 0,
-    upcomingEvents: myVolunteerSignups.filter((v: any) => v.date && new Date(v.date) > new Date()).length
+    upcomingEvents: myVolunteerSignups.filter(v => v.date && new Date(v.date) > new Date()).length
   };
 
   return (
@@ -287,7 +373,7 @@ const CommunityDashboard = () => {
                         <p className="text-sm text-muted-foreground">This Month</p>
                       </div>
                       <div className="text-center p-4 bg-white rounded-xl shadow-sm">
-                        <p className="text-3xl font-bold text-green-600">{myVolunteerSignups.filter((v: any) => v.completed).length}</p>
+                        <p className="text-3xl font-bold text-green-600">{myVolunteerSignups.filter(v => v.status === 'completed').length}</p>
                         <p className="text-sm text-muted-foreground">Completed</p>
                       </div>
                       <div className="text-center p-4 bg-white rounded-xl shadow-sm">
@@ -322,9 +408,13 @@ const CommunityDashboard = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {myVolunteerSignups.length > 0 ? (
+                    {loading ? (
+                      <div className="text-center py-12">
+                        <p className="text-sm text-muted-foreground">Loading your volunteer activities...</p>
+                      </div>
+                    ) : myVolunteerSignups.length > 0 ? (
                       <div className="space-y-4">
-                        {myVolunteerSignups.map((signup: any) => (
+                        {myVolunteerSignups.map((signup) => (
                           <div key={signup.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
                             <div className="flex-1">
                               <h4 className="font-semibold">{signup.title}</h4>
@@ -345,8 +435,8 @@ const CommunityDashboard = () => {
                                 </span>
                               </div>
                             </div>
-                            <Badge className={signup.completed ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}>
-                              {signup.completed ? "Completed" : "Upcoming"}
+                            <Badge className={signup.status === 'completed' ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}>
+                              {signup.status === 'completed' ? "Completed" : signup.status === 'confirmed' ? "Confirmed" : "Signed Up"}
                             </Badge>
                           </div>
                         ))}

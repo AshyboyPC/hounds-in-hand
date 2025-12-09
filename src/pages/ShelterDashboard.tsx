@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
 import PostDogForm from "@/components/shelter/PostDogForm";
 import PostEventForm from "@/components/shelter/PostEventForm";
-import PostSupplyForm from "@/components/shelter/PostSupplyForm";
+import PostSupplyNeedForm from "@/components/shelter/PostSupplyNeedForm";
 import PostStoryForm from "@/components/shelter/PostStoryForm";
 import PostVolunteerForm from "@/components/shelter/PostVolunteerForm";
 import { useAuth } from "@/contexts/AuthContext";
@@ -274,7 +274,7 @@ const ShelterDashboard = () => {
               {/* Supplies Tab */}
               <TabsContent value="supplies">
                 {showPostSupplyForm ? (
-                  <PostSupplyForm
+                  <PostSupplyNeedForm
                     onSubmit={(data) => {
                       console.log("New supply need posted:", data);
                       setShowPostSupplyForm(false);

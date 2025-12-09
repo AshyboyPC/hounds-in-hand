@@ -5,6 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface PostVolunteerFormProps {
   onSubmit: (data: any) => void;
@@ -12,6 +15,7 @@ interface PostVolunteerFormProps {
 }
 
 const PostVolunteerForm = ({ onSubmit, onCancel }: PostVolunteerFormProps) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -27,9 +31,76 @@ const PostVolunteerForm = ({ onSubmit, onCancel }: PostVolunteerFormProps) => {
     recurrence_pattern: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    if (!user) {
+      toast.error("You must be logged in to post opportunities");
+      return;
+    }
+
+    try {
+      // Get shelter_id from user metadata
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('shelter_id')
+        .eq('id', user.id)
+        .single();
+
+      if (userError || !userData?.shelter_id) {
+        toast.error("Could not find your shelter information");
+        return;
+      }
+
+      // Prepare the data for insertion
+      const opportunityData = {
+        shelter_id: userData.shelter_id,
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        difficulty: formData.difficulty,
+        time_commitment: formData.time_commitment,
+        date: formData.date || null,
+        start_time: formData.start_time || null,
+        end_time: formData.end_time || null,
+        location: formData.location || null,
+        max_volunteers: formData.max_volunteers ? parseInt(formData.max_volunteers) : null,
+        is_recurring: formData.is_recurring,
+        recurrence_pattern: formData.is_recurring ? formData.recurrence_pattern : null,
+        status: 'active'
+      };
+
+      // Insert into database
+      const { data, error } = await supabase
+        .from('volunteer_opportunities')
+        .insert([opportunityData])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success("Volunteer opportunity posted successfully!");
+      onSubmit(data);
+      
+      // Reset form
+      setFormData({
+        title: "",
+        description: "",
+        category: "animal_care",
+        difficulty: "beginner",
+        time_commitment: "",
+        date: "",
+        start_time: "",
+        end_time: "",
+        location: "",
+        max_volunteers: "",
+        is_recurring: false,
+        recurrence_pattern: ""
+      });
+    } catch (error) {
+      console.error("Error posting opportunity:", error);
+      toast.error("Failed to post opportunity. Please try again.");
+    }
   };
 
   return (

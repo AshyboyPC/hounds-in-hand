@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,10 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Package, Search, ExternalLink, Building2, AlertCircle, Heart, DollarSign, Info } from "lucide-react";
+import { Package, Search, ExternalLink, Building2, AlertCircle, Heart, DollarSign, Info, Loader2 } from "lucide-react";
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn, SlideInRight, FloatIn } from "@/components/animations";
 import PageTransition from "@/components/PageTransition";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface SupplyNeed {
   id: string;
@@ -27,29 +29,59 @@ interface SupplyNeed {
   other_link?: string;
 }
 
-// Placeholder data - in production, this would come from Supabase
-const sampleSupplyNeeds: SupplyNeed[] = [
-  {
-    id: "1",
-    shelter_id: "1",
-    shelter_name: "[Shelter Name]",
-    item_name: "[Item Name]",
-    category: "food",
-    quantity_needed: 0,
-    quantity_received: 0,
-    priority: "medium",
-    description: "[Item description and details will appear here]"
-  }
-];
-
 const SupplyWishlist = () => {
   const navigate = useNavigate();
-  const [supplyNeeds] = useState<SupplyNeed[]>(sampleSupplyNeeds);
-  // Note: In production, useAuth would be used to check if user is a shelter
+  const [supplyNeeds, setSupplyNeeds] = useState<SupplyNeed[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [shelterFilter, setShelterFilter] = useState("all");
+
+  useEffect(() => {
+    const fetchSupplyNeeds = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('supply_needs')
+          .select(`
+            *,
+            shelters (
+              name
+            )
+          `)
+          .order('priority', { ascending: true })
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        // Transform data to match component interface
+        const transformedData = data?.map(need => ({
+          id: need.id,
+          shelter_id: need.shelter_id,
+          shelter_name: need.shelters?.name || 'Unknown Shelter',
+          item_name: need.item_name,
+          category: need.category,
+          quantity_needed: need.quantity_needed,
+          quantity_received: need.quantity_received || 0,
+          priority: need.priority,
+          description: need.description,
+          amazon_link: need.amazon_link,
+          chewy_link: need.chewy_link,
+          other_link: need.other_link
+        })) || [];
+
+        setSupplyNeeds(transformedData);
+      } catch (error) {
+        console.error('Error fetching supply needs:', error);
+        toast.error('Failed to load supply needs');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSupplyNeeds();
+  }, []);
 
   const shelters = [...new Set(supplyNeeds.map(s => s.shelter_name))];
 
@@ -208,13 +240,20 @@ const SupplyWishlist = () => {
 
         {/* Supply Needs Grid */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <FadeIn direction="up">
-            <p className="text-muted-foreground mb-6">
-              Showing {sortedNeeds.length} items needed
-            </p>
-          </FadeIn>
+          {loading ? (
+            <div className="flex flex-col justify-center items-center py-20">
+              <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+              <p className="text-muted-foreground">Loading supply needs...</p>
+            </div>
+          ) : (
+            <>
+              <FadeIn direction="up">
+                <p className="text-muted-foreground mb-6">
+                  Showing {sortedNeeds.length} items needed
+                </p>
+              </FadeIn>
 
-          <StaggerContainer staggerDelay={0.08} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <StaggerContainer staggerDelay={0.08} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedNeeds.map((need) => {
               const progressPercent = (need.quantity_received / need.quantity_needed) * 100;
 
@@ -232,8 +271,8 @@ const SupplyWishlist = () => {
                             {need.shelter_name}
                           </div>
                         </div>
-                        <Badge className="bg-gray-200 text-gray-600">
-                          [Priority]
+                        <Badge className={getPriorityColor(need.priority)}>
+                          {need.priority.toUpperCase()}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -348,6 +387,8 @@ const SupplyWishlist = () => {
               </CardContent>
             </Card>
           </FadeIn>
+            </>
+          )}
         </div>
       </main>
 
