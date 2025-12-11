@@ -26,6 +26,13 @@ CREATE POLICY "Anyone can view available dogs"
     ON public.dogs FOR SELECT
     USING (status IN ('available', 'foster'));
 
+-- Add a more permissive policy for debugging (can be removed later)
+DROP POLICY IF EXISTS "Public can view all dogs" ON public.dogs;
+CREATE POLICY "Public can view all dogs"
+    ON public.dogs FOR SELECT
+    TO anon, authenticated
+    USING (true);
+
 -- =====================================================
 -- 3. UPDATE SUPPLY NEEDS POLICIES (if needed)
 -- =====================================================

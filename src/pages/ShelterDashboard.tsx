@@ -4,7 +4,8 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Dog, Calendar, Package, Users, Heart, AlertCircle, BookOpen, ArrowLeftRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { PlusCircle, Dog, Calendar, Package, Users, Heart, AlertCircle, BookOpen, ArrowLeftRight, Edit, Trash2, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
 import PostDogForm from "@/components/shelter/PostDogForm";
@@ -14,6 +15,7 @@ import PostStoryForm from "@/components/shelter/PostStoryForm";
 import PostVolunteerForm from "@/components/shelter/PostVolunteerForm";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const ShelterDashboard = () => {
   const navigate = useNavigate();
@@ -26,8 +28,122 @@ const ShelterDashboard = () => {
   const [shelterName, setShelterName] = useState("Your Shelter");
   const { user, profile } = useAuth();
 
+  // State for managing content
+  const [managedDogs, setManagedDogs] = useState([]);
+  const [managedStories, setManagedStories] = useState([]);
+  const [managedOpportunities, setManagedOpportunities] = useState([]);
+  const [managedSupplies, setManagedSupplies] = useState([]);
+  const [managementLoading, setManagementLoading] = useState(false);
+
   // Get user's name from profile
   const userName = profile?.full_name || user?.email?.split('@')[0] || 'Staff Member';
+
+  // Fetch shelter's content for management
+  const fetchShelterContent = async () => {
+    if (!profile?.shelter_id) return;
+    
+    setManagementLoading(true);
+    try {
+      // Fetch dogs
+      const { data: dogs } = await supabase
+        .from('dogs')
+        .select('*')
+        .eq('shelter_id', profile.shelter_id)
+        .order('created_at', { ascending: false });
+      
+      // Fetch stories
+      const { data: stories } = await supabase
+        .from('shelter_stories')
+        .select('*')
+        .eq('shelter_id', profile.shelter_id)
+        .order('created_at', { ascending: false });
+      
+      // Fetch volunteer opportunities
+      const { data: opportunities } = await supabase
+        .from('volunteer_opportunities')
+        .select('*')
+        .eq('shelter_id', profile.shelter_id)
+        .order('created_at', { ascending: false });
+      
+      // Fetch supply needs
+      const { data: supplies } = await supabase
+        .from('supply_needs')
+        .select('*')
+        .eq('shelter_id', profile.shelter_id)
+        .order('created_at', { ascending: false });
+
+      setManagedDogs(dogs || []);
+      setManagedStories(stories || []);
+      setManagedOpportunities(opportunities || []);
+      setManagedSupplies(supplies || []);
+    } catch (error) {
+      console.error('Error fetching content:', error);
+      toast.error('Failed to load content');
+    } finally {
+      setManagementLoading(false);
+    }
+  };
+
+  // Delete functions
+  const deleteDog = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this dog?')) return;
+    
+    try {
+      const { error } = await supabase.from('dogs').delete().eq('id', id);
+      if (error) throw error;
+      
+      toast.success('Dog deleted successfully');
+      fetchShelterContent();
+    } catch (error) {
+      console.error('Error deleting dog:', error);
+      toast.error('Failed to delete dog');
+    }
+  };
+
+  const deleteStory = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this story?')) return;
+    
+    try {
+      const { error } = await supabase.from('shelter_stories').delete().eq('id', id);
+      if (error) throw error;
+      
+      toast.success('Story deleted successfully');
+      fetchShelterContent();
+    } catch (error) {
+      console.error('Error deleting story:', error);
+      toast.error('Failed to delete story');
+    }
+  };
+
+  const deleteOpportunity = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this volunteer opportunity?')) return;
+    
+    try {
+      const { error } = await supabase.from('volunteer_opportunities').delete().eq('id', id);
+      if (error) throw error;
+      
+      toast.success('Volunteer opportunity deleted successfully');
+      fetchShelterContent();
+    } catch (error) {
+      console.error('Error deleting opportunity:', error);
+      toast.error('Failed to delete opportunity');
+    }
+  };
+
+  const deleteSupplyNeed = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this supply need?')) return;
+    
+    try {
+      const { error } = await supabase.from('supply_needs').delete().eq('id', id);
+      if (error) throw error;
+      
+      toast.success('Supply need deleted successfully');
+      fetchShelterContent();
+    } catch (error) {
+      console.error('Error deleting supply need:', error);
+      toast.error('Failed to delete supply need');
+    }
+  };
 
   useEffect(() => {
     // Fetch shelter name if user has a shelter_id
@@ -47,6 +163,13 @@ const ShelterDashboard = () => {
     
     fetchShelterName();
   }, [profile?.shelter_id]);
+
+  // Fetch content when manage tab is accessed
+  useEffect(() => {
+    if (activeTab === 'manage') {
+      fetchShelterContent();
+    }
+  }, [activeTab, profile?.shelter_id]);
 
   // Empty state - no fake data
   const shelterInfo = {
@@ -147,13 +270,14 @@ const ShelterDashboard = () => {
           {/* Main Content Tabs */}
           <FadeIn direction="up" delay={0.2}>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 h-auto">
+              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-7 h-auto">
                 <TabsTrigger value="overview" className="text-sm">Overview</TabsTrigger>
-                <TabsTrigger value="dogs" className="text-sm">Manage Dogs</TabsTrigger>
-                <TabsTrigger value="events" className="text-sm">Events</TabsTrigger>
+                <TabsTrigger value="dogs" className="text-sm">Post Dogs</TabsTrigger>
+                <TabsTrigger value="manage" className="text-sm">Manage Content</TabsTrigger>
                 <TabsTrigger value="supplies" className="text-sm">Supplies</TabsTrigger>
                 <TabsTrigger value="stories" className="text-sm">Stories</TabsTrigger>
                 <TabsTrigger value="volunteers" className="text-sm">Volunteers</TabsTrigger>
+                <TabsTrigger value="events" className="text-sm">Events</TabsTrigger>
               </TabsList>
 
               {/* Overview Tab */}
@@ -166,11 +290,16 @@ const ShelterDashboard = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       <div className="p-6 border-2 border-dashed border-primary/30 rounded-lg text-center hover:border-primary transition-colors cursor-pointer" onClick={() => setActiveTab("dogs")}>
                         <Dog className="w-12 h-12 text-primary mx-auto mb-3" />
                         <h3 className="font-semibold text-primary mb-2">Post a Dog</h3>
                         <p className="text-sm text-muted-foreground">Add dogs available for adoption</p>
+                      </div>
+                      <div className="p-6 border-2 border-dashed border-purple-500/30 rounded-lg text-center hover:border-purple-500 transition-colors cursor-pointer" onClick={() => setActiveTab("manage")}>
+                        <Eye className="w-12 h-12 text-purple-500 mx-auto mb-3" />
+                        <h3 className="font-semibold text-purple-500 mb-2">Manage Content</h3>
+                        <p className="text-sm text-muted-foreground">View, edit, and delete your posts</p>
                       </div>
                       <div className="p-6 border-2 border-dashed border-warning/30 rounded-lg text-center hover:border-warning transition-colors cursor-pointer" onClick={() => setActiveTab("events")}>
                         <Calendar className="w-12 h-12 text-warning mx-auto mb-3" />
@@ -227,6 +356,171 @@ const ShelterDashboard = () => {
                     </CardContent>
                   </Card>
                 )}
+              </TabsContent>
+
+              {/* Manage Content Tab */}
+              <TabsContent value="manage" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Manage Your Content</CardTitle>
+                    <CardDescription>
+                      View, edit, and delete your posted dogs, stories, volunteer opportunities, and supply needs
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {managementLoading ? (
+                      <div className="text-center py-12">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                        <p className="text-muted-foreground">Loading your content...</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-8">
+                        {/* Dogs Section */}
+                        <div>
+                          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                            <Dog className="w-5 h-5" />
+                            Your Dogs ({managedDogs.length})
+                          </h3>
+                          {managedDogs.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {managedDogs.map((dog: any) => (
+                                <Card key={dog.id} className="relative">
+                                  <CardContent className="p-4">
+                                    <div className="flex justify-between items-start mb-2">
+                                      <h4 className="font-semibold">{dog.name}</h4>
+                                      <Badge className={dog.status === 'available' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}>
+                                        {dog.status}
+                                      </Badge>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mb-2">{dog.breed} • {dog.age}</p>
+                                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{dog.description}</p>
+                                    <div className="flex gap-2">
+                                      <Button size="sm" variant="outline" className="flex-1">
+                                        <Edit className="w-3 h-3 mr-1" />
+                                        Edit
+                                      </Button>
+                                      <Button size="sm" variant="outline" onClick={() => deleteDog(dog.id)} className="text-red-600 hover:text-red-700">
+                                        <Trash2 className="w-3 h-3" />
+                                      </Button>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-muted-foreground text-sm">No dogs posted yet.</p>
+                          )}
+                        </div>
+
+                        {/* Stories Section */}
+                        <div>
+                          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                            <BookOpen className="w-5 h-5" />
+                            Your Stories ({managedStories.length})
+                          </h3>
+                          {managedStories.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {managedStories.map((story: any) => (
+                                <Card key={story.id}>
+                                  <CardContent className="p-4">
+                                    <div className="flex justify-between items-start mb-2">
+                                      <h4 className="font-semibold line-clamp-1">{story.title}</h4>
+                                      <Badge variant="outline">{story.story_type}</Badge>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{story.content}</p>
+                                    <div className="flex gap-2">
+                                      <Button size="sm" variant="outline" className="flex-1">
+                                        <Edit className="w-3 h-3 mr-1" />
+                                        Edit
+                                      </Button>
+                                      <Button size="sm" variant="outline" onClick={() => deleteStory(story.id)} className="text-red-600 hover:text-red-700">
+                                        <Trash2 className="w-3 h-3" />
+                                      </Button>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-muted-foreground text-sm">No stories posted yet.</p>
+                          )}
+                        </div>
+
+                        {/* Volunteer Opportunities Section */}
+                        <div>
+                          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                            <Users className="w-5 h-5" />
+                            Your Volunteer Opportunities ({managedOpportunities.length})
+                          </h3>
+                          {managedOpportunities.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {managedOpportunities.map((opp: any) => (
+                                <Card key={opp.id}>
+                                  <CardContent className="p-4">
+                                    <div className="flex justify-between items-start mb-2">
+                                      <h4 className="font-semibold line-clamp-1">{opp.title}</h4>
+                                      <Badge variant="outline">{opp.category}</Badge>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mb-2">{opp.time_commitment}</p>
+                                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{opp.description}</p>
+                                    <div className="flex gap-2">
+                                      <Button size="sm" variant="outline" className="flex-1">
+                                        <Edit className="w-3 h-3 mr-1" />
+                                        Edit
+                                      </Button>
+                                      <Button size="sm" variant="outline" onClick={() => deleteOpportunity(opp.id)} className="text-red-600 hover:text-red-700">
+                                        <Trash2 className="w-3 h-3" />
+                                      </Button>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-muted-foreground text-sm">No volunteer opportunities posted yet.</p>
+                          )}
+                        </div>
+
+                        {/* Supply Needs Section */}
+                        <div>
+                          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                            <Package className="w-5 h-5" />
+                            Your Supply Needs ({managedSupplies.length})
+                          </h3>
+                          {managedSupplies.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {managedSupplies.map((supply: any) => (
+                                <Card key={supply.id}>
+                                  <CardContent className="p-4">
+                                    <div className="flex justify-between items-start mb-2">
+                                      <h4 className="font-semibold line-clamp-1">{supply.item_name}</h4>
+                                      <Badge className={supply.priority === 'urgent' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}>
+                                        {supply.priority}
+                                      </Badge>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mb-2">{supply.category} • Need: {supply.quantity_needed}</p>
+                                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{supply.description}</p>
+                                    <div className="flex gap-2">
+                                      <Button size="sm" variant="outline" className="flex-1">
+                                        <Edit className="w-3 h-3 mr-1" />
+                                        Edit
+                                      </Button>
+                                      <Button size="sm" variant="outline" onClick={() => deleteSupplyNeed(supply.id)} className="text-red-600 hover:text-red-700">
+                                        <Trash2 className="w-3 h-3" />
+                                      </Button>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-muted-foreground text-sm">No supply needs posted yet.</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               {/* Events Tab */}

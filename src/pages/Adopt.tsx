@@ -53,7 +53,19 @@ const Adopt = () => {
         const { data, error } = await supabase
           .from('dogs')
           .select(`
-            *,
+            id,
+            name,
+            breed,
+            age,
+            age_category,
+            size,
+            gender,
+            temperament,
+            description,
+            status,
+            is_urgent,
+            photo_urls,
+            created_at,
             shelters (
               name,
               city,
@@ -63,7 +75,10 @@ const Adopt = () => {
           .in('status', ['available', 'foster'])
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
 
         if (data) {
           const formattedDogs: Dog[] = data.map((dog: any) => ({
@@ -74,13 +89,13 @@ const Adopt = () => {
             ageCategory: dog.age_category || 'adult',
             size: dog.size || 'medium',
             gender: dog.gender || 'male',
-            location: dog.shelters?.city || '[Location]',
-            shelter: dog.shelters?.name || '[Shelter Name]',
-            temperament: dog.temperament ? dog.temperament.split(',').map((t: string) => t.trim()) : ['[Trait]'],
+            location: (Array.isArray(dog.shelters) ? dog.shelters[0]?.city : dog.shelters?.city) || '[Location]',
+            shelter: (Array.isArray(dog.shelters) ? dog.shelters[0]?.name : dog.shelters?.name) || '[Shelter Name]',
+            temperament: Array.isArray(dog.temperament) ? dog.temperament : (dog.temperament ? [dog.temperament] : ['[Trait]']),
             description: dog.description || '[Dog description will appear here]',
-            imageUrl: dog.photo_url || '/api/placeholder/400/300',
+            imageUrl: (Array.isArray(dog.photo_urls) && dog.photo_urls.length > 0) ? dog.photo_urls[0] : '/api/placeholder/400/300',
             isUrgent: dog.is_urgent || false,
-            isAvailable: dog.is_available !== false
+            isAvailable: dog.status === 'available' || dog.status === 'foster'
           }));
           setAllDogs(formattedDogs);
         }
