@@ -60,6 +60,7 @@ const Adopt = () => {
               state
             )
           `)
+          .in('status', ['available', 'foster'])
           .order('created_at', { ascending: false });
 
         if (error) throw error;

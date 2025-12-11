@@ -36,7 +36,7 @@ const DogOfTheWeek = () => {
             )
           `)
           .eq('is_dog_of_week', true)
-          .eq('is_available', true)
+          .eq('status', 'available')
           .limit(1)
           .single();
 

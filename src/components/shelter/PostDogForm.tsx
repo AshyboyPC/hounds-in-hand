@@ -54,12 +54,12 @@ const PostDogForm = ({ onSubmit, onCancel }: PostDogFormProps) => {
           age_category: formData.ageCategory,
           size: formData.size,
           gender: formData.gender,
-          temperament: formData.temperament,
+          temperament: formData.temperament.split(',').map(t => t.trim()).filter(t => t.length > 0),
           description: formData.description,
           medical_info: formData.medicalInfo || null,
-          is_available: formData.status === 'available',
+          status: formData.status,
           is_urgent: formData.isUrgent,
-          photo_url: formData.photos[0] || null, // Use first photo or null
+          photo_urls: formData.photos.length > 0 ? formData.photos : [],
         }])
         .select();
 

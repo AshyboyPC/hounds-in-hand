@@ -1,82 +1,43 @@
-import { useState } from "react";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Mail, Phone } from "lucide-react";
 
 const DeveloperBanner = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
   return (
-    <div className="w-full bg-white border-t border-gray-200 overflow-hidden">
-      <div 
-        className={`max-w-7xl mx-auto transition-all duration-500 ease-in-out ${
-          isExpanded ? 'py-8' : 'py-4'
-        }`}
-        onMouseEnter={() => setIsExpanded(true)}
-        onMouseLeave={() => setIsExpanded(false)}
-      >
-        {/* Collapsed State */}
-        <div 
-          className={`transition-all duration-500 ${
-            isExpanded ? 'opacity-0 h-0' : 'opacity-100 h-auto'
-          }`}
-        >
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-sm text-gray-600 px-4">
-            <span className="font-medium">Developed by</span>
+    <div className="w-full bg-gradient-to-r from-blue-600 to-blue-700 border-t border-blue-800">
+      <div className="max-w-7xl mx-auto py-3 px-4">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-white/90">
+          <span className="font-medium">Developed by Ashwindh Ramesh</span>
+          
+          <span className="hidden sm:inline text-white/40">|</span>
+          
+          <a
+            href="https://locagenieai.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-white hover:text-blue-200 transition-colors font-medium"
+          >
+            <span>View My Other Projects</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+          
+          <span className="hidden sm:inline text-white/40">|</span>
+          
+          <div className="flex items-center gap-3">
+            <span className="font-medium">Contact:</span>
             <a
-              href="https://locagenieai.vercel.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center gap-1.5 font-semibold text-primary hover:text-primary/80 transition-colors"
+              href="mailto:ashwindh.ramesh2325@gmail.com"
+              className="inline-flex items-center gap-1.5 text-white hover:text-blue-200 transition-colors"
             >
-              <span>Ashwindh Ramesh</span>
-              <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <Mail className="w-3.5 h-3.5" />
+              <span>ashwindh.ramesh2325@gmail.com</span>
             </a>
-            <span className="hidden sm:inline text-gray-400">•</span>
-            <span className="text-gray-500">© 2025</span>
-          </div>
-        </div>
-
-        {/* Expanded State */}
-        <div 
-          className={`transition-all duration-500 ${
-            isExpanded ? 'opacity-100' : 'opacity-0 absolute pointer-events-none'
-          }`}
-        >
-          <div className="flex flex-col items-center justify-center gap-4 px-4">
-            <div className="flex items-center gap-3">
-              <div className="h-px w-12 bg-gradient-to-r from-transparent to-primary"></div>
-              <h3 className="text-lg font-bold text-primary heading-font">
-                Crafted by Ashwindh Ramesh
-              </h3>
-              <div className="h-px w-12 bg-gradient-to-l from-transparent to-primary"></div>
-            </div>
-            
-            <p className="text-sm text-gray-600 max-w-2xl text-center body-font">
-              Full-stack developer passionate about creating impactful solutions. 
-              Explore more innovative projects and AI-powered applications.
-            </p>
-            
-            <div className="flex gap-3">
-              <a
-                href="https://locagenieai.vercel.app"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-primary to-blue-600 text-white rounded-full font-semibold text-sm hover:shadow-lg hover:scale-105 transition-all duration-300"
-              >
-                <span>View Portfolio</span>
-                <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </a>
-              
-              <a
-                href="https://locagenieai.vercel.app"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-2.5 border-2 border-primary text-primary rounded-full font-semibold text-sm hover:bg-primary hover:text-white transition-all duration-300"
-              >
-                <span>More Projects</span>
-              </a>
-            </div>
-            
-            <p className="text-xs text-gray-400 mt-2">© 2025 • Built with ❤️ for Connect 4 Paws</p>
+            <span className="text-white/40">•</span>
+            <a
+              href="tel:+14709262583"
+              className="inline-flex items-center gap-1.5 text-white hover:text-blue-200 transition-colors"
+            >
+              <Phone className="w-3.5 h-3.5" />
+              <span>+1 (470) 926-2583</span>
+            </a>
           </div>
         </div>
       </div>

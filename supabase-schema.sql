@@ -70,12 +70,20 @@ CREATE POLICY "Function can update profiles"
 -- 3. INITIAL SHELTER DATA
 -- =====================================================
 INSERT INTO public.shelters (name, access_code, state, website, description)
-VALUES (
+VALUES 
+(
     'Furkids Animal Rescue & Shelters',
     'FURKIDS2025',
     'GA',
     'https://furkids.org',
     'Georgia''s largest no-kill animal rescue and shelters with multiple locations throughout Georgia.'
+),
+(
+    'Hope for Hounds Rescue',
+    'HOPEFORHOUNDS',
+    'GA',
+    'https://hopeforhounds.org',
+    'Dedicated to rescuing and rehoming dogs in need throughout Georgia.'
 )
 ON CONFLICT (access_code) DO NOTHING;
 
