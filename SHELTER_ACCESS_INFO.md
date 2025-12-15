@@ -1,24 +1,32 @@
 # Shelter Access Information
 
-## 🔑 Demo Access Code
+## 🔑 Shelter Access Codes
 
-**FURKIDS2025**
+### **Available Shelters:**
 
-This code grants access to "Furkids Animal Rescue & Shelters" in the database.
+1. **FURKIDS2025** - Furkids Animal Rescue & Shelters
+   - Location: Georgia
+   - Website: https://furkids.org
+   - Description: Georgia's largest no-kill animal rescue and shelters
+
+2. **HOPEFORHOUNDS** - Hope for Hounds Rescue  
+   - Location: Georgia
+   - Website: https://hopeforhounds.org
+   - Description: Dedicated to rescuing and rehoming dogs in need throughout Georgia
 
 ## 🚀 Quick Start
 
 ### First Time Setup
 1. **Run the database schema**: Follow `SUPABASE_SETUP_GUIDE.md`
 2. **Create a user account**: Sign up or use Supabase dashboard
-3. **Test the access code**: Use `FURKIDS2025` to become a shelter user
+3. **Test an access code**: Use `FURKIDS2025` or `HOPEFORHOUNDS` to become a shelter user
 
 ## 📍 How to Access Shelter Dashboard
 
 ### Option 1: During Login
 1. Log in with your Supabase account
 2. A popup appears asking for a shelter access code
-3. Enter `FURKIDS2025` or click "Go to Community" to skip
+3. Enter `FURKIDS2025` or `HOPEFORHOUNDS` or click "Go to Community" to skip
 
 ### Option 2: From Community Dashboard
 1. Log in and go to the Community Dashboard

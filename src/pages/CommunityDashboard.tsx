@@ -38,6 +38,8 @@ const CommunityDashboard = () => {
   const { user, profile } = useAuth();
   const [myVolunteerSignups, setMyVolunteerSignups] = useState<VolunteerSignup[]>([]);
   const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
 
   // Get user name from profile (Supabase) or fallback to user email
   const userName = profile?.full_name || profile?.email?.split('@')[0] || user?.email?.split('@')[0] || 'Friend';
@@ -46,6 +48,16 @@ const CommunityDashboard = () => {
   const [savedDogs] = useState([
     // This would be populated from user's saved dogs
   ]);
+
+  // State for community feed content
+  const [communityContent, setCommunityContent] = useState({
+    recentDogs: [],
+    recentStories: [],
+    recentEvents: [],
+    recentOpportunities: [],
+    recentSupplies: []
+  });
+  const [feedLoading, setFeedLoading] = useState(false);
 
   useEffect(() => {
     const fetchVolunteerSignups = async () => {
@@ -115,6 +127,133 @@ const CommunityDashboard = () => {
 
     fetchVolunteerSignups();
   }, [user]);
+
+  // Fetch events for the Events tab
+  const fetchEvents = async () => {
+    setEventsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select(`
+          *,
+          shelters (
+            name
+          )
+        `)
+        .eq('status', 'active')
+        .gte('date', new Date().toISOString().split('T')[0]) // Only future events
+        .order('date', { ascending: true })
+        .limit(10);
+
+      if (error) throw error;
+      setEvents(data || []);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      toast.error('Failed to load events');
+    } finally {
+      setEventsLoading(false);
+    }
+  };
+
+  // Fetch events when Events tab is accessed
+  useEffect(() => {
+    if (activeTab === 'events') {
+      fetchEvents();
+    }
+  }, [activeTab]);
+
+  // Fetch community content for the feed
+  const fetchCommunityContent = async () => {
+    setFeedLoading(true);
+    try {
+      // Fetch recent dogs
+      const { data: dogs } = await supabase
+        .from('dogs')
+        .select('*, shelters(name)')
+        .in('status', ['available', 'foster'])
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      // Fetch recent stories
+      const { data: stories } = await supabase
+        .from('shelter_stories')
+        .select('*, shelters(name)')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      // Fetch recent events (both upcoming and recent past events)
+      const { data: events } = await supabase
+        .from('events')
+        .select('*, shelters(name)')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      // Fetch recent volunteer opportunities
+      const { data: opportunities } = await supabase
+        .from('volunteer_opportunities')
+        .select('*, shelters(name)')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      // Fetch recent supply needs
+      const { data: supplies } = await supabase
+        .from('supply_needs')
+        .select('*, shelters(name)')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      // Debug logging
+      console.log('Community content fetched:', {
+        dogs: dogs?.length || 0,
+        stories: stories?.length || 0,
+        events: events?.length || 0,
+        opportunities: opportunities?.length || 0,
+        supplies: supplies?.length || 0
+      });
+
+      setCommunityContent({
+        recentDogs: dogs || [],
+        recentStories: stories || [],
+        recentEvents: events || [],
+        recentOpportunities: opportunities || [],
+        recentSupplies: supplies || []
+      });
+    } catch (error) {
+      console.error('Error fetching community content:', error);
+      toast.error('Failed to load community content');
+    } finally {
+      setFeedLoading(false);
+    }
+  };
+
+  // Fetch community content when feed tab is accessed or component mounts
+  useEffect(() => {
+    if (activeTab === 'feed') {
+      fetchCommunityContent();
+    }
+  }, [activeTab]);
+
+  // Also fetch content when component first mounts if on feed tab
+  useEffect(() => {
+    if (activeTab === 'feed') {
+      fetchCommunityContent();
+    }
+  }, []);
+
+  // Auto-refresh community content every 30 seconds when on feed tab
+  useEffect(() => {
+    if (activeTab === 'feed') {
+      const interval = setInterval(() => {
+        fetchCommunityContent();
+      }, 30000); // 30 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [activeTab]);
 
   // Calculate stats from actual data
   const userData = {
@@ -247,6 +386,21 @@ const CommunityDashboard = () => {
 
               {/* Community Feed Tab */}
               <TabsContent value="feed" className="space-y-6">
+                {/* Refresh Button */}
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-semibold">Community Feed</h2>
+                  <Button 
+                    onClick={fetchCommunityContent}
+                    variant="outline"
+                    size="sm"
+                    disabled={feedLoading}
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowLeftRight className={`w-4 h-4 ${feedLoading ? 'animate-spin' : ''}`} />
+                    {feedLoading ? 'Refreshing...' : 'Refresh'}
+                  </Button>
+                </div>
+
                 {/* Quick Actions */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <Card className="cursor-pointer hover:shadow-lg transition-shadow border-l-4 border-l-primary" onClick={() => navigate("/adopt")}>
@@ -287,26 +441,200 @@ const CommunityDashboard = () => {
                   </Card>
                 </div>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Bell className="w-5 h-5" />
-                      Latest Updates from Shelters
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center py-12">
-                      <Bell className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-muted-foreground mb-2">No Updates Yet</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Check back later for updates from local shelters
-                      </p>
-                      <Button onClick={() => navigate("/stories")} className="bg-primary">
-                        View Shelter Stories
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                {feedLoading ? (
+                  <Card>
+                    <CardContent className="p-8">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                        <p className="text-muted-foreground">Loading community updates...</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="space-y-8">
+                    {/* Recent Dogs */}
+                    {communityContent.recentDogs.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <Heart className="w-5 h-5" />
+                              Recently Posted Dogs
+                            </span>
+                            <Button size="sm" variant="outline" onClick={() => navigate("/adopt")}>
+                              View All
+                            </Button>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {communityContent.recentDogs.slice(0, 3).map((dog: any) => (
+                              <Card key={dog.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/adopt")}>
+                                <CardContent className="p-4">
+                                  <h4 className="font-semibold">{dog.name}</h4>
+                                  <p className="text-sm text-muted-foreground">{dog.breed} • {dog.age}</p>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {Array.isArray(dog.shelters) ? dog.shelters[0]?.name : dog.shelters?.name}
+                                  </p>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Recent Stories */}
+                    {communityContent.recentStories.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <BookOpen className="w-5 h-5" />
+                              Latest Shelter Stories
+                            </span>
+                            <Button size="sm" variant="outline" onClick={() => navigate("/stories")}>
+                              View All
+                            </Button>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {communityContent.recentStories.slice(0, 2).map((story: any) => (
+                              <Card key={story.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/stories")}>
+                                <CardContent className="p-4">
+                                  <h4 className="font-semibold line-clamp-2">{story.title}</h4>
+                                  <p className="text-sm text-muted-foreground line-clamp-2 mt-2">{story.content}</p>
+                                  <p className="text-xs text-muted-foreground mt-2">
+                                    {Array.isArray(story.shelters) ? story.shelters[0]?.name : story.shelters?.name}
+                                  </p>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Upcoming Events */}
+                    {communityContent.recentEvents.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <Calendar className="w-5 h-5" />
+                              Upcoming Events
+                            </span>
+                            <Button size="sm" variant="outline" onClick={() => navigate("/events")}>
+                              View All
+                            </Button>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {communityContent.recentEvents.slice(0, 2).map((event: any) => (
+                              <Card key={event.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/events")}>
+                                <CardContent className="p-4">
+                                  <h4 className="font-semibold line-clamp-2">{event.title}</h4>
+                                  <p className="text-sm text-muted-foreground">{new Date(event.date).toLocaleDateString()}</p>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {Array.isArray(event.shelters) ? event.shelters[0]?.name : event.shelters?.name}
+                                  </p>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Recent Volunteer Opportunities */}
+                    {communityContent.recentOpportunities.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <Users className="w-5 h-5" />
+                              New Volunteer Opportunities
+                            </span>
+                            <Button size="sm" variant="outline" onClick={() => navigate("/volunteer-board")}>
+                              View All
+                            </Button>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {communityContent.recentOpportunities.slice(0, 2).map((opp: any) => (
+                              <Card key={opp.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/volunteer-board")}>
+                                <CardContent className="p-4">
+                                  <h4 className="font-semibold line-clamp-2">{opp.title}</h4>
+                                  <p className="text-sm text-muted-foreground">{opp.time_commitment}</p>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {Array.isArray(opp.shelters) ? opp.shelters[0]?.name : opp.shelters?.name}
+                                  </p>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Recent Supply Needs */}
+                    {communityContent.recentSupplies.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <Package className="w-5 h-5" />
+                              Recent Supply Needs
+                            </span>
+                            <Button size="sm" variant="outline" onClick={() => navigate("/supply-wishlist")}>
+                              View All
+                            </Button>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {communityContent.recentSupplies.slice(0, 3).map((supply: any) => (
+                              <Card key={supply.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/supply-wishlist")}>
+                                <CardContent className="p-4">
+                                  <h4 className="font-semibold line-clamp-2">{supply.item_name}</h4>
+                                  <p className="text-sm text-muted-foreground">{supply.category} • Priority: {supply.priority}</p>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {Array.isArray(supply.shelters) ? supply.shelters[0]?.name : supply.shelters?.name}
+                                  </p>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Empty State */}
+                    {!communityContent.recentDogs.length && 
+                     !communityContent.recentStories.length && 
+                     !communityContent.recentEvents.length && 
+                     !communityContent.recentOpportunities.length && 
+                     !communityContent.recentSupplies.length && (
+                      <Card>
+                        <CardContent className="p-8">
+                          <div className="text-center">
+                            <Bell className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-muted-foreground mb-2">No Updates Yet</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              Check back later for updates from local shelters
+                            </p>
+                            <Button onClick={() => navigate("/stories")} className="bg-primary">
+                              Explore Shelter Content
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+                )}
               </TabsContent>
 
               {/* Saved Dogs Tab */}
@@ -468,23 +796,83 @@ const CommunityDashboard = () => {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Calendar className="w-5 h-5" />
-                      Upcoming Events
+                      Upcoming Events ({events.length})
                     </CardTitle>
                     <CardDescription>
                       RSVP to adoption events, fundraisers, and community gatherings
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-12">
-                      <Calendar className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-muted-foreground mb-2">No Events Scheduled</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Check back later for upcoming shelter events
-                      </p>
-                      <Button onClick={() => navigate("/")} className="bg-primary">
-                        Explore Shelters
-                      </Button>
-                    </div>
+                    {eventsLoading ? (
+                      <div className="text-center py-12">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                        <p className="text-muted-foreground">Loading events...</p>
+                      </div>
+                    ) : events.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {events.map((event: any) => (
+                          <Card key={event.id} className="hover:shadow-md transition-shadow">
+                            <CardContent className="p-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-semibold line-clamp-2">{event.title}</h4>
+                                <Badge variant="outline" className="ml-2 shrink-0">
+                                  {event.event_type?.replace('_', ' ')}
+                                </Badge>
+                              </div>
+                              
+                              <div className="space-y-2 mb-3">
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                  <Calendar className="w-4 h-4" />
+                                  {event.date && new Date(event.date).toLocaleDateString()}
+                                  {event.start_time && ` • ${event.start_time}`}
+                                </div>
+                                
+                                {event.shelters?.name && (
+                                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <Building2 className="w-4 h-4" />
+                                    {event.shelters.name}
+                                  </div>
+                                )}
+                                
+                                {event.location && (
+                                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <Clock className="w-4 h-4" />
+                                    {event.location}
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <p className="text-xs text-muted-foreground mb-3" title={event.description}>
+                                {event.description && event.description.length > 100 
+                                  ? `${event.description.substring(0, 100)}...` 
+                                  : event.description}
+                              </p>
+                              
+                              <div className="flex gap-2">
+                                <Button size="sm" className="flex-1 bg-primary">
+                                  <Heart className="w-3 h-3 mr-1" />
+                                  RSVP
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={() => navigate("/events")}>
+                                  View Details
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <Calendar className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-muted-foreground mb-2">No Events Scheduled</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Check back later for upcoming shelter events
+                        </p>
+                        <Button onClick={() => navigate("/events")} className="bg-primary">
+                          Explore All Events
+                        </Button>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>

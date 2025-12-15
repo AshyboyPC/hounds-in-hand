@@ -13,18 +13,20 @@ import { toast } from "sonner";
 interface PostStoryFormProps {
   onSubmit: (data: any) => void;
   onCancel: () => void;
+  editingItem?: any;
 }
 
-const PostStoryForm = ({ onSubmit, onCancel }: PostStoryFormProps) => {
+const PostStoryForm = ({ onSubmit, onCancel, editingItem }: PostStoryFormProps) => {
   const { profile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    story_type: "update",
-    dog_name: "",
-    is_featured: false,
-    photos: [] as string[]
+    shelterName: editingItem?.shelter_name || "",
+    title: editingItem?.title || "",
+    content: editingItem?.content || "",
+    story_type: editingItem?.story_type || "update",
+    dog_name: editingItem?.dog_name || "",
+    is_featured: editingItem?.is_featured || false,
+    photos: editingItem?.photo_urls || []
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,26 +40,46 @@ const PostStoryForm = ({ onSubmit, onCancel }: PostStoryFormProps) => {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase
-        .from('shelter_stories')
-        .insert([{
-          shelter_id: profile.shelter_id,
-          title: formData.title,
-          content: formData.content,
-          story_type: formData.story_type,
-          dog_name: formData.dog_name || null,
-          is_featured: formData.is_featured,
-          photo_url: formData.photos[0] || null,
-        }])
-        .select();
+      const storyData = {
+        shelter_id: profile.shelter_id,
+        shelter_name: formData.shelterName,
+        title: formData.title,
+        content: formData.content,
+        story_type: formData.story_type,
+        dog_name: formData.dog_name || null,
+        is_featured: formData.is_featured,
+        photo_url: formData.photos[0] || null,
+      };
+
+      let data, error;
+
+      if (editingItem) {
+        // Update existing story
+        const result = await supabase
+          .from('shelter_stories')
+          .update(storyData)
+          .eq('id', editingItem.id)
+          .select();
+        data = result.data;
+        error = result.error;
+      } else {
+        // Insert new story
+        const result = await supabase
+          .from('shelter_stories')
+          .insert([storyData])
+          .select();
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) throw error;
 
-      toast.success("Story posted successfully! It will now appear on the Stories page.");
+      toast.success(editingItem ? "Story updated successfully!" : "Story posted successfully! It will now appear on the Stories page.");
       onSubmit(data);
       
       // Reset form
       setFormData({
+        shelterName: "",
         title: "",
         content: "",
         story_type: "update",
@@ -67,7 +89,17 @@ const PostStoryForm = ({ onSubmit, onCancel }: PostStoryFormProps) => {
       });
     } catch (error: any) {
       console.error('Error posting story:', error);
-      toast.error(error.message || "Failed to post story. Please try again.");
+      
+      // Provide specific error messages for common issues
+      if (error.message?.includes('photo_url')) {
+        toast.error("Database schema error: photo_url column missing. Please run the database fix script.");
+      } else if (error.message?.includes('dog_name')) {
+        toast.error("Database schema error: dog_name column missing. Please run the database fix script.");
+      } else if (error.message?.includes('schema cache')) {
+        toast.error("Database schema cache needs refresh. Please run the database fix script.");
+      } else {
+        toast.error(error.message || "Failed to post story. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -89,10 +121,22 @@ const PostStoryForm = ({ onSubmit, onCancel }: PostStoryFormProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Share a Story or Update</CardTitle>
+        <CardTitle>{editingItem ? 'Edit Story' : 'Share a Story or Update'}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Shelter Name */}
+          <div className="space-y-2">
+            <Label htmlFor="shelterName">Shelter Name *</Label>
+            <Input
+              id="shelterName"
+              value={formData.shelterName}
+              onChange={(e) => setFormData({ ...formData, shelterName: e.target.value })}
+              placeholder="Enter your shelter name"
+              required
+            />
+          </div>
+
           {/* Story Type */}
           <div className="space-y-2">
             <Label htmlFor="story_type">Story Type *</Label>
@@ -203,7 +247,7 @@ const PostStoryForm = ({ onSubmit, onCancel }: PostStoryFormProps) => {
           {/* Action Buttons */}
           <div className="flex gap-4 pt-4">
             <Button type="submit" className="flex-1 bg-primary" disabled={isSubmitting}>
-              {isSubmitting ? "Publishing..." : "Publish Story"}
+              {isSubmitting ? (editingItem ? "Updating..." : "Publishing...") : (editingItem ? "Update Story" : "Publish Story")}
             </Button>
             <Button type="button" variant="outline" onClick={onCancel} className="flex-1" disabled={isSubmitting}>
               Cancel

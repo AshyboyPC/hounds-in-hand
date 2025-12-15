@@ -110,11 +110,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 // Fetch profile with timeout
                 try {
                     const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+                        setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
                     );
                     await Promise.race([fetchProfile(session.user.id), timeoutPromise]);
                 } catch (error) {
                     console.error("Error fetching profile on auth change:", error);
+                    // Continue anyway - don't block the app
                 }
             } else {
                 setProfile(null);

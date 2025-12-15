@@ -63,6 +63,7 @@ const VolunteerBoard = () => {
         if (error) throw error;
 
         if (data) {
+          console.log('Raw volunteer opportunities data:', data); // Debug log
           const formattedOpps: VolunteerOpportunity[] = data.map((opp: any) => ({
             id: opp.id,
             shelter_id: opp.shelter_id,
@@ -80,6 +81,7 @@ const VolunteerBoard = () => {
             current_volunteers: opp.current_volunteers || 0,
             is_recurring: opp.is_recurring || false
           }));
+          console.log('Formatted opportunities:', formattedOpps); // Debug log
           setOpportunities(formattedOpps);
         }
       } catch (error: any) {
@@ -125,6 +127,13 @@ const VolunteerBoard = () => {
     const matchesDifficulty = difficultyFilter === "all" || opp.difficulty === difficultyFilter;
     return matchesSearch && matchesCategory && matchesDifficulty;
   });
+
+  // Debug logging
+  console.log('All opportunities:', opportunities.length);
+  console.log('Filtered opportunities:', filteredOpportunities.length);
+  console.log('Search query:', searchQuery);
+  console.log('Category filter:', categoryFilter);
+  console.log('Difficulty filter:', difficultyFilter);
 
   const handleSignUp = async (opportunityId: string, title: string) => {
     if (!user) {
@@ -349,13 +358,20 @@ const VolunteerBoard = () => {
 
         {/* Opportunities Grid */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <FadeIn direction="up">
-            <p className="text-muted-foreground mb-6">
-              Showing {filteredOpportunities.length} opportunities
-            </p>
-          </FadeIn>
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading volunteer opportunities...</p>
+            </div>
+          ) : (
+            <>
+              <FadeIn direction="up">
+                <p className="text-muted-foreground mb-6">
+                  Showing {filteredOpportunities.length} opportunities
+                </p>
+              </FadeIn>
 
-          <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredOpportunities.map((opp) => {
               const isFull = opp.max_volunteers ? opp.current_volunteers >= opp.max_volunteers : false;
               const isSignedUp = signedUpIds.includes(opp.id);
@@ -434,16 +450,18 @@ const VolunteerBoard = () => {
             })}
           </StaggerContainer>
 
-          {filteredOpportunities.length === 0 && (
-            <div className="text-center py-12">
-              <Users className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-muted-foreground mb-2">
-                No opportunities found
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Try adjusting your filters or check back later
-              </p>
-            </div>
+              {filteredOpportunities.length === 0 && (
+                <div className="text-center py-12">
+                  <Users className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-muted-foreground mb-2">
+                    No opportunities found
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Try adjusting your filters or check back later
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </main>

@@ -12,22 +12,24 @@ import { toast } from "sonner";
 interface PostVolunteerFormProps {
   onSubmit: (data: any) => void;
   onCancel: () => void;
+  editingItem?: any;
 }
 
-const PostVolunteerForm = ({ onSubmit, onCancel }: PostVolunteerFormProps) => {
+const PostVolunteerForm = ({ onSubmit, onCancel, editingItem }: PostVolunteerFormProps) => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    category: "animal_care",
-    difficulty: "beginner",
-    time_commitment: "",
-    date: "",
-    start_time: "",
-    end_time: "",
-    location: "",
-    max_volunteers: "",
-    is_recurring: false,
+    shelterName: editingItem?.shelter_name || "",
+    title: editingItem?.title || "",
+    description: editingItem?.description || "",
+    category: editingItem?.category || "animal_care",
+    difficulty: editingItem?.difficulty || "beginner",
+    time_commitment: editingItem?.time_commitment || "",
+    date: editingItem?.date || "",
+    start_time: editingItem?.start_time || "",
+    end_time: editingItem?.end_time || "",
+    location: editingItem?.location || "",
+    max_volunteers: editingItem?.max_volunteers?.toString() || "",
+    is_recurring: editingItem?.is_recurring || false,
     recurrence_pattern: ""
   });
 
@@ -42,7 +44,7 @@ const PostVolunteerForm = ({ onSubmit, onCancel }: PostVolunteerFormProps) => {
     try {
       // Get shelter_id from user metadata
       const { data: userData, error: userError } = await supabase
-        .from('users')
+        .from('profiles')
         .select('shelter_id')
         .eq('id', user.id)
         .single();
@@ -55,6 +57,7 @@ const PostVolunteerForm = ({ onSubmit, onCancel }: PostVolunteerFormProps) => {
       // Prepare the data for insertion
       const opportunityData = {
         shelter_id: userData.shelter_id,
+        shelter_name: formData.shelterName,
         title: formData.title,
         description: formData.description,
         category: formData.category,
@@ -70,20 +73,37 @@ const PostVolunteerForm = ({ onSubmit, onCancel }: PostVolunteerFormProps) => {
         status: 'active'
       };
 
-      // Insert into database
-      const { data, error } = await supabase
-        .from('volunteer_opportunities')
-        .insert([opportunityData])
-        .select()
-        .single();
+      let data, error;
+
+      if (editingItem) {
+        // Update existing volunteer opportunity
+        const result = await supabase
+          .from('volunteer_opportunities')
+          .update(opportunityData)
+          .eq('id', editingItem.id)
+          .select()
+          .single();
+        data = result.data;
+        error = result.error;
+      } else {
+        // Insert new volunteer opportunity
+        const result = await supabase
+          .from('volunteer_opportunities')
+          .insert([opportunityData])
+          .select()
+          .single();
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) throw error;
 
-      toast.success("Volunteer opportunity posted successfully!");
+      toast.success(editingItem ? "Volunteer opportunity updated successfully!" : "Volunteer opportunity posted successfully!");
       onSubmit(data);
       
       // Reset form
       setFormData({
+        shelterName: "",
         title: "",
         description: "",
         category: "animal_care",
@@ -106,10 +126,22 @@ const PostVolunteerForm = ({ onSubmit, onCancel }: PostVolunteerFormProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Post Volunteer Opportunity</CardTitle>
+        <CardTitle>{editingItem ? 'Edit Volunteer Opportunity' : 'Post Volunteer Opportunity'}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Shelter Name */}
+          <div className="space-y-2">
+            <Label htmlFor="shelterName">Shelter Name *</Label>
+            <Input
+              id="shelterName"
+              value={formData.shelterName}
+              onChange={(e) => setFormData({ ...formData, shelterName: e.target.value })}
+              placeholder="Enter your shelter name"
+              required
+            />
+          </div>
+
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title">Opportunity Title *</Label>
@@ -284,7 +316,7 @@ const PostVolunteerForm = ({ onSubmit, onCancel }: PostVolunteerFormProps) => {
           {/* Action Buttons */}
           <div className="flex gap-4 pt-4">
             <Button type="submit" className="flex-1 bg-primary">
-              Post Opportunity
+              {editingItem ? "Update Opportunity" : "Post Opportunity"}
             </Button>
             <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
               Cancel

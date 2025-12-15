@@ -12,20 +12,22 @@ import { toast } from "sonner";
 interface PostSupplyNeedFormProps {
   onSubmit: (data: any) => void;
   onCancel: () => void;
+  editingItem?: any;
 }
 
-const PostSupplyNeedForm = ({ onSubmit, onCancel }: PostSupplyNeedFormProps) => {
+const PostSupplyNeedForm = ({ onSubmit, onCancel, editingItem }: PostSupplyNeedFormProps) => {
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    item_name: "",
-    category: "food",
-    quantity_needed: "",
-    priority: "medium",
-    description: "",
-    amazon_link: "",
-    chewy_link: "",
-    other_link: ""
+    shelterName: editingItem?.shelter_name || "",
+    item_name: editingItem?.item_name || "",
+    category: editingItem?.category || "food",
+    quantity_needed: editingItem?.quantity_needed || "",
+    priority: editingItem?.priority || "medium",
+    description: editingItem?.description || "",
+    amazon_link: editingItem?.amazon_link || "",
+    chewy_link: editingItem?.chewy_link || "",
+    other_link: editingItem?.other_link || ""
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,6 +56,7 @@ const PostSupplyNeedForm = ({ onSubmit, onCancel }: PostSupplyNeedFormProps) => 
       // Prepare the data for insertion
       const supplyData = {
         shelter_id: userData.shelter_id,
+        shelter_name: formData.shelterName,
         item_name: formData.item_name,
         category: formData.category,
         quantity_needed: parseInt(formData.quantity_needed),
@@ -66,20 +69,37 @@ const PostSupplyNeedForm = ({ onSubmit, onCancel }: PostSupplyNeedFormProps) => 
         is_fulfilled: false
       };
 
-      // Insert into database
-      const { data, error } = await supabase
-        .from('supply_needs')
-        .insert([supplyData])
-        .select()
-        .single();
+      let data, error;
+
+      if (editingItem) {
+        // Update existing supply need
+        const result = await supabase
+          .from('supply_needs')
+          .update(supplyData)
+          .eq('id', editingItem.id)
+          .select()
+          .single();
+        data = result.data;
+        error = result.error;
+      } else {
+        // Insert new supply need
+        const result = await supabase
+          .from('supply_needs')
+          .insert([supplyData])
+          .select()
+          .single();
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) throw error;
 
-      toast.success("Supply need posted successfully! It will now appear on the Supply Wishlist page.");
+      toast.success(editingItem ? "Supply need updated successfully!" : "Supply need posted successfully! It will now appear on the Supply Wishlist page.");
       onSubmit(data);
       
       // Reset form
       setFormData({
+        shelterName: "",
         item_name: "",
         category: "food",
         quantity_needed: "",
@@ -100,10 +120,22 @@ const PostSupplyNeedForm = ({ onSubmit, onCancel }: PostSupplyNeedFormProps) => 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Post Supply Need</CardTitle>
+        <CardTitle>{editingItem ? 'Edit Supply Need' : 'Post Supply Need'}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Shelter Name */}
+          <div className="space-y-2">
+            <Label htmlFor="shelterName">Shelter Name *</Label>
+            <Input
+              id="shelterName"
+              value={formData.shelterName}
+              onChange={(e) => setFormData({ ...formData, shelterName: e.target.value })}
+              placeholder="Enter your shelter name"
+              required
+            />
+          </div>
+
           {/* Item Name */}
           <div className="space-y-2">
             <Label htmlFor="item_name">Item Name *</Label>
@@ -227,7 +259,7 @@ const PostSupplyNeedForm = ({ onSubmit, onCancel }: PostSupplyNeedFormProps) => 
           {/* Action Buttons */}
           <div className="flex gap-4 pt-4">
             <Button type="submit" className="flex-1 bg-primary" disabled={isSubmitting}>
-              {isSubmitting ? "Posting..." : "Post Supply Need"}
+              {isSubmitting ? (editingItem ? "Updating..." : "Posting...") : (editingItem ? "Update Supply Need" : "Post Supply Need")}
             </Button>
             <Button type="button" variant="outline" onClick={onCancel} className="flex-1" disabled={isSubmitting}>
               Cancel

@@ -13,24 +13,26 @@ import { toast } from "sonner";
 interface PostDogFormProps {
   onSubmit: (data: any) => void;
   onCancel: () => void;
+  editingItem?: any;
 }
 
-const PostDogForm = ({ onSubmit, onCancel }: PostDogFormProps) => {
+const PostDogForm = ({ onSubmit, onCancel, editingItem }: PostDogFormProps) => {
   const { profile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    breed: "",
-    age: "",
-    ageCategory: "adult",
-    size: "medium",
-    gender: "male",
-    temperament: "",
-    description: "",
-    medicalInfo: "",
-    status: "available",
-    isUrgent: false,
-    photos: [] as string[]
+    shelterName: editingItem?.shelter_name || "",
+    name: editingItem?.name || "",
+    breed: editingItem?.breed || "",
+    age: editingItem?.age || "",
+    ageCategory: editingItem?.age_category || "adult",
+    size: editingItem?.size || "medium",
+    gender: editingItem?.gender || "male",
+    temperament: editingItem?.temperament ? editingItem.temperament.join(', ') : "",
+    description: editingItem?.description || "",
+    medicalInfo: editingItem?.medical_info || "",
+    status: editingItem?.status || "available",
+    isUrgent: editingItem?.is_urgent || false,
+    photos: editingItem?.photo_urls || []
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,32 +46,52 @@ const PostDogForm = ({ onSubmit, onCancel }: PostDogFormProps) => {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase
-        .from('dogs')
-        .insert([{
-          shelter_id: profile.shelter_id,
-          name: formData.name,
-          breed: formData.breed,
-          age: formData.age,
-          age_category: formData.ageCategory,
-          size: formData.size,
-          gender: formData.gender,
-          temperament: formData.temperament.split(',').map(t => t.trim()).filter(t => t.length > 0),
-          description: formData.description,
-          medical_info: formData.medicalInfo || null,
-          status: formData.status,
-          is_urgent: formData.isUrgent,
-          photo_urls: formData.photos.length > 0 ? formData.photos : [],
-        }])
-        .select();
+      const dogData = {
+        shelter_id: profile.shelter_id,
+        shelter_name: formData.shelterName,
+        name: formData.name,
+        breed: formData.breed,
+        age: formData.age,
+        age_category: formData.ageCategory,
+        size: formData.size,
+        gender: formData.gender,
+        temperament: formData.temperament.split(',').map(t => t.trim()).filter(t => t.length > 0),
+        description: formData.description,
+        medical_info: formData.medicalInfo || null,
+        status: formData.status,
+        is_urgent: formData.isUrgent,
+        photo_urls: formData.photos.length > 0 ? formData.photos : [],
+      };
+
+      let data, error;
+
+      if (editingItem) {
+        // Update existing dog
+        const result = await supabase
+          .from('dogs')
+          .update(dogData)
+          .eq('id', editingItem.id)
+          .select();
+        data = result.data;
+        error = result.error;
+      } else {
+        // Create new dog
+        const result = await supabase
+          .from('dogs')
+          .insert([dogData])
+          .select();
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) throw error;
 
-      toast.success("Dog posted successfully! It will now appear on the Adopt page.");
+      toast.success(editingItem ? "Dog updated successfully!" : "Dog posted successfully! It will now appear on the Adopt page.");
       onSubmit(data);
       
       // Reset form
       setFormData({
+        shelterName: "",
         name: "",
         breed: "",
         age: "",
@@ -108,10 +130,22 @@ const PostDogForm = ({ onSubmit, onCancel }: PostDogFormProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Post New Dog for Adoption</CardTitle>
+        <CardTitle>{editingItem ? 'Edit Dog' : 'Post New Dog for Adoption'}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Shelter Information */}
+          <div className="space-y-2">
+            <Label htmlFor="shelterName">Shelter Name *</Label>
+            <Input
+              id="shelterName"
+              value={formData.shelterName}
+              onChange={(e) => setFormData({ ...formData, shelterName: e.target.value })}
+              placeholder="Enter your shelter name"
+              required
+            />
+          </div>
+
           {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -298,7 +332,7 @@ const PostDogForm = ({ onSubmit, onCancel }: PostDogFormProps) => {
           {/* Action Buttons */}
           <div className="flex gap-4 pt-4">
             <Button type="submit" className="flex-1 bg-primary" disabled={isSubmitting}>
-              {isSubmitting ? "Posting..." : "Post Dog"}
+              {isSubmitting ? (editingItem ? "Updating..." : "Posting...") : (editingItem ? "Update Dog" : "Post Dog")}
             </Button>
             <Button type="button" variant="outline" onClick={onCancel} className="flex-1" disabled={isSubmitting}>
               Cancel
