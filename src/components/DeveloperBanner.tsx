@@ -4,6 +4,10 @@ const DeveloperBanner = () => {
   return (
     <div className="w-full bg-gradient-to-r from-blue-600 to-blue-700 border-t border-blue-800">
       <div className="max-w-7xl mx-auto py-3 px-4">
+        <p className="text-center text-sm text-white/90 mb-3">
+          <span className="font-medium">Project collaborator: Anand Mehta</span>
+          {" · "}Original idea & $500 raised for the nonprofit
+        </p>
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-white/90">
           <span className="font-medium">Developed by Ashwindh Ramesh</span>
           
