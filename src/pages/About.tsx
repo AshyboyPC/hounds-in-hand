@@ -62,7 +62,7 @@ const About = () => {
                   After visiting the Atlanta Humane Society, I saw how valuable it is when shelters have strong ways to share their needs with the public. I wanted to create a resource that smaller shelters can use to do the same — whether it's finding adopters, recruiting volunteers, or spreading awareness about their dogs.
                 </p>
                 <p className="text-lg body-font text-gray-700 leading-relaxed mb-6">
-                  I facilitated over $500 in donations and raised $200 to support the nonprofit's work.
+                  I facilitated over $500 in donations and raised $200 to support the nonprofit's work. I also partnered with Furkids Animal Rescue & Shelters, a local rescue organization, to support donation efforts.
                 </p>
                 <p className="text-lg body-font text-gray-700 leading-relaxed mb-6">
                   Connect 4 Paws was built to make that connection easier. This site provides a space where shelters can express their needs and where the community can discover opportunities to help.
