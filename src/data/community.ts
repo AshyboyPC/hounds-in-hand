@@ -5,11 +5,11 @@ export const donationLinks = {
   supplies: "https://atlantahumane.org/contact-us/donate-supplies/",
 };
 export const wishlist = [
-  { name: "Milkbones", detail: "10 lb box", category: "Treats" },
-  { name: "Large, heavy-duty dog leash", detail: "Strong, durable leash", category: "Walking" },
-  { name: "Rope toys", detail: "Durable toys for dogs", category: "Enrichment" },
-  { name: "Water and food bowls", detail: "Easy-to-clean bowls", category: "Everyday care" },
-  { name: "Rescue Disinfectant", detail: "Check the shelter’s preferred product and size before purchasing", category: "Cleaning" },
+  { name: "Milkbones", detail: "10 lb box", category: "Treats", image: "biscuits", amazon: "https://www.amazon.com/dp/B000I82DTU", shoppingLabel: "View on Amazon" },
+  { name: "Large, heavy-duty dog leash", detail: "A sturdy leash suitable for large dogs", category: "Walking", image: "leash", amazon: "https://www.amazon.com/s?k=heavy+duty+dog+leash+large+dogs", shoppingLabel: "Find on Amazon" },
+  { name: "Rope toys", detail: "Durable knotted rope toys for dogs", category: "Enrichment", image: "rope", amazon: "https://www.amazon.com/s?k=durable+knotted+rope+dog+toys", shoppingLabel: "Find on Amazon" },
+  { name: "Water and food bowls", detail: "Sturdy, easy-to-clean dog bowls", category: "Everyday care", image: "bowls", amazon: "https://www.amazon.com/s?k=stainless+steel+dog+food+water+bowls", shoppingLabel: "Find on Amazon" },
+  { name: "Rescue Disinfectant", detail: "Confirm the shelter’s preferred formula and size", category: "Cleaning", image: "disinfectant", amazon: "https://www.amazon.com/s?k=Rescue+disinfectant+Virox", shoppingLabel: "Find on Amazon" },
 ];
 export const leaders = [
   { name: "Matthew Pastor", hours: 51 },
