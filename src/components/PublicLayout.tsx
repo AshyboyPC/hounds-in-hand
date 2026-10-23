@@ -14,7 +14,6 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
   const main = useRef<HTMLElement>(null);
   useEffect(() => {
     document.title = `${pageNames[pathname] || "Page Not Found"} | Connect 4 Paws`;
-    window.scrollTo(0,0);
     main.current?.focus({preventScroll:true});
   }, [pathname]);
   return <div className="public-site"><a className="skip-main" href="#main-content">Skip to content</a><Header /><main ref={main} tabIndex={-1} id="main-content" className="site-main">{children}</main><Footer /></div>;

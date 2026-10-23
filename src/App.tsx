@@ -25,6 +25,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import DashboardRedirect from "./components/DashboardRedirect";
+import SmoothScroll from "./components/SmoothScroll";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const AppContent = () => {
 
   return (
     <>
+      <SmoothScroll />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/adopt" element={<Adopt />} />
