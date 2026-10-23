@@ -10,11 +10,6 @@ import { useNavigate } from "react-router-dom";
 const Donate = () => {
     const navigate = useNavigate();
 
-    const handleDonateNow = () => {
-        // In production, this would redirect to a payment processor
-        alert("Redirecting to donation platform...");
-    };
-
     const handleSponsorDog = () => {
         navigate("/adopt");
     };
@@ -51,16 +46,18 @@ const Donate = () => {
                                 <Card className="p-6 sm:p-8 bg-white shadow-sm border border-gray-100 rounded-lg">
                                     <CardContent className="p-0">
                                         <h3 className="heading-font text-xl sm:text-2xl font-semibold text-primary mb-3 sm:mb-4">
-                                            Donate to a Shelter
+                                            Donate to Furkids
                                         </h3>
                                         <p className="body-font text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 leading-relaxed">
-                                            Give directly to a shelter of your choice. Your support funds food, bedding and medical care.
+                                            Anand Mehta has partnered with local Furkids Animal Rescue & Shelters to support animals in need. Give directly through Furkids' official donation page.
                                         </p>
                                         <Button
-                                            onClick={handleDonateNow}
+                                            asChild
                                             className="bg-destructive hover:bg-destructive/90 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full button-font font-semibold text-base sm:text-lg w-full sm:w-auto"
                                         >
-                                            Donate Now
+                                            <a href="https://furkids.org/donation" target="_blank" rel="noopener noreferrer">
+                                                Donate to Furkids
+                                            </a>
                                         </Button>
                                     </CardContent>
                                 </Card>
@@ -214,7 +211,7 @@ const Donate = () => {
                                 <div className="flex items-center space-x-2 sm:space-x-3">
                                     <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
                                     <p className="body-font text-xs sm:text-sm text-center sm:text-left">
-                                        All donations are processed securely. 100% of funds go directly to shelters and dogs.
+                                        Donations to Furkids are made directly on Furkids' official website.
                                     </p>
                                     <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
                                 </div>
