@@ -23,19 +23,15 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Partnerships from "./pages/Partnerships";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
-import PawLoader from "./components/PawLoader";
-import { usePageLoader } from "./hooks/usePageLoader";
 import { AuthProvider } from "./contexts/AuthContext";
 import DashboardRedirect from "./components/DashboardRedirect";
 
 const queryClient = new QueryClient();
 
 const AppContent = () => {
-  const { showLoader, handleLoaderComplete } = usePageLoader();
 
   return (
     <>
-      <PawLoader isVisible={showLoader} onComplete={handleLoaderComplete} />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/adopt" element={<Adopt />} />
