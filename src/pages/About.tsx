@@ -46,23 +46,23 @@ const About = () => {
           </div>
         </div>
 
-        {/* Collaborator Story */}
+        {/* Founder Story */}
         <FadeIn direction="up">
           <div className="bg-white px-6 py-16">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-4xl display-font text-primary mb-3 text-center">Meet Anand Mehta</h2>
               <p className="text-lg body-font text-primary font-medium mb-6 text-center">
-                Project Collaborator · Original Idea & Fundraising
+                Founder & Project Lead · Co-developer
               </p>
               <div className="prose prose-lg max-w-none">
                 <p className="text-lg body-font text-gray-700 leading-relaxed mb-6">
-                  Hi, I'm Anand Mehta, the secretary of the Help-a-Hound Club at my school. I came up with the idea for Connect 4 Paws to expand the work we do in our club and to create a bridge between animal shelters and the community.
+                  Hi, I'm Anand Mehta, the vice president of the Help-a-Hound Club at my school. I founded Connect 4 Paws and led the project to expand the work we do in our club and to create a bridge between animal shelters and the community.
                 </p>
                 <p className="text-lg body-font text-gray-700 leading-relaxed mb-6">
                   After visiting the Atlanta Humane Society, I saw how valuable it is when shelters have strong ways to share their needs with the public. I wanted to create a resource that smaller shelters can use to do the same — whether it's finding adopters, recruiting volunteers, or spreading awareness about their dogs.
                 </p>
                 <p className="text-lg body-font text-gray-700 leading-relaxed mb-6">
-                  As a collaborator on this project, I also raised $500 in funding for the nonprofit.
+                  I facilitated over $500 in donations and raised $200 to support the nonprofit's work.
                 </p>
                 <p className="text-lg body-font text-gray-700 leading-relaxed mb-6">
                   Connect 4 Paws was built to make that connection easier. This site provides a space where shelters can express their needs and where the community can discover opportunities to help.
