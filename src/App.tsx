@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { useAuth } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import Adopt from "./pages/Adopt";
@@ -11,11 +11,6 @@ import VolunteerBoard from "./pages/VolunteerBoard";
 import SupplyWishlist from "./pages/SupplyWishlist";
 import ShelterStories from "./pages/ShelterStories";
 import Donate from "./pages/Donate";
-import Login from "./pages/Login";
-import ForgotPassword from "./pages/ForgotPassword";
-import CommunityDashboard from "./pages/CommunityDashboard";
-import StaffDashboard from "./pages/StaffDashboard";
-import ShelterDashboard from "./pages/ShelterDashboard";
 import MapPage from "./pages/MapPage";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -27,6 +22,12 @@ import { AuthProvider } from "./contexts/AuthContext";
 import DashboardRedirect from "./components/DashboardRedirect";
 import SmoothScroll from "./components/SmoothScroll";
 
+const Login = lazy(() => import("./pages/Login"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const CommunityDashboard = lazy(() => import("./pages/CommunityDashboard"));
+const StaffDashboard = lazy(() => import("./pages/StaffDashboard"));
+const ShelterDashboard = lazy(() => import("./pages/ShelterDashboard"));
+
 const queryClient = new QueryClient();
 
 const AppContent = () => {
@@ -34,6 +35,7 @@ const AppContent = () => {
   return (
     <>
       <SmoothScroll />
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center" role="status" aria-live="polite">Loading page…</div>}>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/adopt" element={<Adopt />} />
@@ -106,6 +108,7 @@ const AppContent = () => {
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </Suspense>
     </>
   );
 };

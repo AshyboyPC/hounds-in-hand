@@ -1,10 +1,9 @@
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Lenis from "lenis";
-import { gsap } from "gsap";
 import "lenis/dist/lenis.css";
 
-/** One scroll controller shared by every route, driven by the existing animation clock. */
+/** One lightweight controller shared by every route. */
 export default function SmoothScroll() {
   const { pathname, hash, key } = useLocation();
   const navigate = useNavigate();
@@ -13,17 +12,15 @@ export default function SmoothScroll() {
 
   useEffect(() => {
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let removeTicker: (() => void) | undefined;
 
     const configure = () => {
-      removeTicker?.();
       controller.current?.destroy();
       controller.current = null;
-      removeTicker = undefined;
       if (motionPreference.matches) return;
 
       const lenis = new Lenis({
-        lerp: 0.09,
+        autoRaf: true,
+        lerp: 0.14,
         smoothWheel: true,
         wheelMultiplier: 1,
         syncTouch: false,
@@ -34,16 +31,12 @@ export default function SmoothScroll() {
         respectReducedMotion: true,
       });
       controller.current = lenis;
-      const tick = (seconds: number) => lenis.raf(seconds * 1000);
-      gsap.ticker.add(tick);
-      removeTicker = () => gsap.ticker.remove(tick);
     };
 
     configure();
     motionPreference.addEventListener("change", configure);
     return () => {
       motionPreference.removeEventListener("change", configure);
-      removeTicker?.();
       controller.current?.destroy();
       controller.current = null;
     };

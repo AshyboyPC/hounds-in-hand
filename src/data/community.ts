@@ -11,16 +11,26 @@ export const wishlist = [
   { name: "Water and food bowls", detail: "Sturdy, easy-to-clean dog bowls", category: "Everyday care", image: "bowls", amazon: "https://www.amazon.com/s?k=stainless+steel+dog+food+water+bowls", shoppingLabel: "Find on Amazon" },
   { name: "Rescue Disinfectant", detail: "Confirm the shelter’s preferred formula and size", category: "Cleaning", image: "disinfectant", amazon: "https://www.amazon.com/s?k=Rescue+disinfectant+Virox", shoppingLabel: "Find on Amazon" },
 ];
+export const hoursUpdatedOn = "October 24, 2026";
 export const leaders = [
-  { name: "Matthew Pastor", hours: 51 },
-  { name: "Finn Bennett", hours: 33 },
-  { name: "Kyle Wright", hours: 27 },
+  { name: "Matthew Pastor", hours: 22 },
+  { name: "Finn Bennett", hours: 20 },
+  { name: "Kyle Wright", hours: 16 },
 ];
 export const shelters = [
   { id: "paws", name: "PAWS Atlanta", area: "Decatur", address: "5287 Covington Highway, Decatur, GA 30035", description: "Dog care, enrichment, events and off-site supply drives.", eligibility: "On-site volunteering is 18+. Younger students can organize off-site supply drives and fundraisers.", volunteer: "https://www.pawsatlanta.org/volunteer-overview/individual", signup: "https://app.betterimpact.com/Application?ApplicationFormNumber=1&OrganizationGuid=d9c2f9c8-6b5d-49ac-9316-ee516417a55e", signupLabel: "Apply to volunteer", portal: "https://app.betterimpact.com/Login", youth: "https://www.pawsatlanta.org/volunteer-overview/youth", calendar: "https://www.pawsatlanta.org/events", website: "https://www.pawsatlanta.org", note: "Apply first, then complete orientation before scheduling a shift." },
   { id: "ahs", name: "Atlanta Humane Society", area: "Atlanta & Roswell", address: "1551 Perry Boulevard NW, Atlanta, GA 30318", description: "Shelter volunteering, dog adoption events and school community service.", eligibility: "The documented community-service program is 18+. Check the regular volunteer application for role-specific requirements.", volunteer: "https://atlantahumane.org/get-involved/volunteer/", signup: "https://atlantahumane.org/get-involved/volunteer/", signupLabel: "Choose a volunteer program", portal: "https://atlantahumane.volunteerportal.org", youth: "https://atlantahumane.org/get-involved/volunteer/community-service/", calendar: "https://atlantahumane.org/events/", website: "https://atlantahumane.org", note: "Applications, training and available shifts are managed by Atlanta Humane." },
   { id: "furkids", name: "Furkids Marietta", area: "Marietta", address: "1487 Roswell Road, Marietta, GA 30062", description: "Help at the Marietta thrift store, where proceeds support Furkids’ rescue work.", eligibility: "The thrift program welcomes youth volunteers. Confirm age, supervision and orientation requirements with Furkids before signing up.", volunteer: "https://furkids.org/thrift-store", signup: "https://furkids.volunteerhub.com/vv2/", signupLabel: "Find a Furkids shift", portal: "https://furkids.volunteerhub.com/vv2/", youth: "https://furkids.org/volunteer/youth-opportunities", calendar: "https://furkids.org/events", website: "https://furkids.org", note: "Marietta is a thrift-store opportunity. Hands-on dog care is at the Sutherlin Dog Shelter in Cumming." },
 ];
+// Volunteer programs and physical dog-shelter locations serve different purposes.
+export const shelterLocations = shelters.map(shelter => shelter.id === "furkids" ? {
+  ...shelter,
+  name: "Furkids Sutherlin Dog Shelter",
+  area: "Cumming",
+  address: "5235 Union Hill Road, Cumming, GA 30040",
+  description: "Furkids’ dog shelter at its headquarters in Cumming.",
+  volunteer: "https://furkids.org/about-us/location-and-hours/",
+} : shelter);
 export type ShelterEvent = { shelter: string; title: string; start: string; end: string; time: string; location: string; kind: "Orientation" | "Community event" | "Dog adoption" | "Fundraiser" | "Vaccine clinic"; url: string };
 const pawsCalendar = "https://www.pawsatlanta.org/events";
 export const shelterEvents: ShelterEvent[] = [
