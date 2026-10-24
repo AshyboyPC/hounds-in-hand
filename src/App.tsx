@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import DashboardRedirect from "./components/DashboardRedirect";
 import SmoothScroll from "./components/SmoothScroll";
+import PageLoading from "./components/PageLoading";
 
 const Login = lazy(() => import("./pages/Login"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
@@ -35,7 +36,7 @@ const AppContent = () => {
   return (
     <>
       <SmoothScroll />
-      <Suspense fallback={<div className="min-h-screen flex items-center justify-center" role="status" aria-live="polite">Loading page…</div>}>
+      <Suspense fallback={<PageLoading />}>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/adopt" element={<Adopt />} />
