@@ -1,5 +1,5 @@
 export const reviewedOn = "October 23, 2026";
-export const campaign = { raised: 200, goal: 350 };
+export const campaign = { raised: 2000, facilitated: 1500, goal: 350, updatedOn: "October 31, 2026" };
 export const donationLinks = {
   furkids: "https://furkids.org/donation",
   supplies: "https://atlantahumane.org/contact-us/donate-supplies/",
