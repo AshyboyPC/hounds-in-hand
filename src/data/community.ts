@@ -1,15 +1,15 @@
 export const reviewedOn = "October 23, 2026";
-export const campaign = { raised: 2000, facilitated: 1500, goal: 350, updatedOn: "October 31, 2026" };
+export const campaign = { raised: 2000, facilitated: 1500 };
 export const donationLinks = {
   furkids: "https://furkids.org/donation",
   supplies: "https://atlantahumane.org/contact-us/donate-supplies/",
 };
 export const wishlist = [
-  { name: "Milkbones", detail: "10 lb box", category: "Treats", image: "biscuits", amazon: "https://www.amazon.com/dp/B000I82DTU", shoppingLabel: "View on Amazon" },
-  { name: "Large, heavy-duty dog leash", detail: "A sturdy leash suitable for large dogs", category: "Walking", image: "leash", amazon: "https://www.amazon.com/s?k=heavy+duty+dog+leash+large+dogs", shoppingLabel: "Find on Amazon" },
-  { name: "Rope toys", detail: "Durable knotted rope toys for dogs", category: "Enrichment", image: "rope", amazon: "https://www.amazon.com/s?k=durable+knotted+rope+dog+toys", shoppingLabel: "Find on Amazon" },
-  { name: "Water and food bowls", detail: "Sturdy, easy-to-clean dog bowls", category: "Everyday care", image: "bowls", amazon: "https://www.amazon.com/s?k=stainless+steel+dog+food+water+bowls", shoppingLabel: "Find on Amazon" },
-  { name: "Rescue Disinfectant", detail: "Confirm the shelter’s preferred formula and size", category: "Cleaning", image: "disinfectant", amazon: "https://www.amazon.com/s?k=Rescue+disinfectant+Virox", shoppingLabel: "Find on Amazon" },
+  { name: "Milkbones", detail: "10 lb box", category: "Treats", image: "biscuits", amazon: "https://www.amazon.com/dp/B000I82DTU", shoppingLabel: "Shop on Amazon" },
+  { name: "Large, heavy-duty dog leash", detail: "For large dogs", category: "Walking", image: "leash", amazon: "https://www.amazon.com/s?k=heavy+duty+dog+leash+large+dogs", shoppingLabel: "Search Amazon" },
+  { name: "Rope toys", detail: "Durable, knotted rope", category: "Enrichment", image: "rope", amazon: "https://www.amazon.com/s?k=durable+knotted+rope+dog+toys", shoppingLabel: "Search Amazon" },
+  { name: "Water and food bowls", detail: "Stainless steel bowls", category: "Everyday care", image: "bowls", amazon: "https://www.amazon.com/s?k=stainless+steel+dog+food+water+bowls", shoppingLabel: "Search Amazon" },
+  { name: "Rescue Disinfectant", detail: "Ask the shelter which formula and size they need", category: "Cleaning", image: "disinfectant", amazon: "https://www.amazon.com/s?k=Rescue+disinfectant+Virox", shoppingLabel: "Search Amazon" },
 ];
 export const hoursUpdatedOn = "October 24, 2026";
 export const leaders = [

@@ -4,8 +4,8 @@ import { donationLinks, wishlist } from "@/data/community";
 export default function SupplyWishlist() {
   return <PublicLayout>
     <header className="page-intro">
-      <h1>Our supply wishlist.</h1>
-      <p>Five ways to help local dogs. Choose an item, then check the shelter’s donation instructions before sending it.</p>
+      <h1>A little goes a long way.</h1>
+      <p>Everyday essentials for shelter dogs.</p>
     </header>
     <ul className="wishlist-products" aria-label="Supply wishlist">
       {wishlist.map(item => <li className={`surface wishlist-product product-${item.image}`} key={item.name}>
@@ -21,10 +21,10 @@ export default function SupplyWishlist() {
         </div>
       </li>)}
     </ul>
-    <p className="wishlist-shopping-note">Illustrations show the item types. “Find on Amazon” opens matching search results; select the right size and quantity.</p>
+
     <section className="site-section surface wishlist-delivery">
-      <div><h2>Ready to donate?</h2><p>Check accepted items and drop-off details with the receiving shelter. For Rescue Disinfectant, confirm the formula and container size before buying.</p></div>
-      <a className="depth-button" href={donationLinks.supplies} target="_blank" rel="noopener noreferrer">Donation instructions <span aria-hidden="true">↗</span></a>
+      <div><h2>Where to send it</h2><p>Atlanta Humane Society’s drop-off locations and accepted supplies.</p></div>
+      <a className="depth-button" href={donationLinks.supplies} target="_blank" rel="noopener noreferrer">Drop-off details <span aria-hidden="true">↗</span></a>
     </section>
   </PublicLayout>;
 }
